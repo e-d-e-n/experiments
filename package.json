@@ -1,0 +1,17 @@
+{
+  "name": "tcc-experiments",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "harp": "^0.27.0",
+    "harp-scripts": "^0.1.2"
+  },
+  "author": "Leonardo Dino <leonardo@kunstdesign.com.br>",
+  "scripts": {
+    "start": "harp-scripts start",
+    "dev": "harp-scripts watch",
+    "test": "harp-scripts test",
+    "compile": "harp-scripts compile"
+  }
+}
