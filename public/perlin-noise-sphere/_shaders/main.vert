@@ -6,20 +6,19 @@ uniform float waves;
 uniform float eqcolor;
 uniform bool fragment;
 
-varying float qnoise;
+varying float noisefactor;
 
 void main(){
-	float displacement;
-	float factor = turbulence(decay * abs(normal + time));
+	noisefactor = turbulence(decay * abs(normal + time));
 
-	float noise = (1.0 *  - waves) * factor;
-	qnoise = (2.0 *  - eqcolor) * factor;
-	float b = pnoise( complex * (position) + vec3(1.0 * time), vec3( 100.0 ));
+	float noise = (1.0 *  - waves) * noisefactor;
+	float b = pnoise(complex * (position) + vec3(time), vec3(100.0));
 
+	float displacement = sin(noise) * -1.0;
 	if(fragment == true){
-		displacement = - sin(noise) + normalize(b * 0.5);
+		displacement += normalize(b * 0.5);
 	}else{
-		displacement = - sin(noise) + cos(b * 0.5);
+		displacement += cos(b * 0.5);
 	}
 
 	vec3 newPosition = (position) + (normal * displacement);
