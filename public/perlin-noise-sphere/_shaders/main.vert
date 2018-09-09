@@ -1,11 +1,10 @@
 uniform float time;
-uniform float pointscale;
+uniform float pointsize;
 uniform float decay;
 uniform float complex;
 uniform float waves;
 uniform float eqcolor;
 uniform bool fragment;
-
 varying float noisefactor;
 
 void main(){
@@ -23,5 +22,5 @@ void main(){
 
 	vec3 newPosition = (position) + (normal * displacement);
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-	gl_PointSize = pointscale;
+	gl_PointSize = pointsize;
 }
