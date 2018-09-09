@@ -1,72 +1,4 @@
-const $ = selector => document.querySelector(selector)
-
-window.addEventListener('load', init, false)
-
-function init(){
-	createWorld()
-	createPrimitive()
-	createGUI()
-	animation()
-}
-
-var scene, camera, renderer
-const start = Date.now()
-
-function createWorld(){
-	const width  = window.innerWidth
-	const height = window.innerHeight
-
-	scene = new THREE.Scene()
-
-	camera = new THREE.PerspectiveCamera(55, width/height, 1, 1000)
-	camera.position.z = 12
-
-	renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
-	renderer.setSize(width, height)
-
-	$('#container').appendChild(renderer.domElement)
-	window.addEventListener('resize', onWindowResize, false)
-}
-
-function onWindowResize(){
-	const width = window.innerWidth
-	const height = window.innerHeight
-	renderer.setSize(width, height)
-	camera.aspect = width / height
-	camera.updateProjectionMatrix()
-}
-
-var material
-var primitiveElement = function(){
-	this.mesh = new THREE.Object3D()
-	material = new THREE.ShaderMaterial({
-		wireframe: false,
-		fog: true,
-		uniforms: {
-			time: {type: 'f', value: 0.0},
-			pointsize: {type: 'f', value: 0.0},
-			decay: {type: 'f', value: 0.0},
-			complex: {type: 'f', value: 0.0},
-			waves: {type: 'f', value: 0.0},
-			eqcolor: {type: 'f', value: 0.0},
-			fragment: {type: 'i', value: true},
-		},
-		vertexShader: $('#vertexShader').textContent,
-		fragmentShader: $('#fragmentShader').textContent,
-	})
-	var geo = new THREE.IcosahedronBufferGeometry(3, 7)
-	var mesh = new THREE.Points(geo, material)
-
-	this.mesh.add(mesh)
-}
-
-var _primitive
-function createPrimitive() {
-	_primitive = new primitiveElement()
-	scene.add(_primitive.mesh)
-}
-
-var options = {
+const options = {
 	perlin: {
 		vel: 0.002,
 		speed: 0.00050,
@@ -83,7 +15,78 @@ var options = {
 	}
 }
 
-function createGUI(){
+window.addEventListener('load', () => init({
+	window: window,
+	document: document,
+	start: new Date(),
+	options: options,
+}))
+
+const getWindowDimensions = ({innerWidth: width, innerHeight: height}) => ({width, height})
+
+function init({window, document, options, start}){
+	const $ = selector => document.querySelector(selector)
+	const {width, height} = getWindowDimensions(window)
+
+	const domElement = $('#container')
+	const {textContent: vertexShader} = $('#vertexShader')
+	const {textContent: fragmentShader} = $('#fragmentShader')
+
+	const scene = new THREE.Scene()
+
+	const {camera, renderer} = createWorld({width, height, domElement})
+	const {object, material} = createObject({vertexShader, fragmentShader})
+
+	scene.add(object)
+
+	const gui = createGUI({camera, options})
+	animation({scene, object, camera, material, renderer, options, start})
+
+	const resizeHandler = () => onWindowResize({camera, renderer, window})
+	window.addEventListener('resize', resizeHandler)
+}
+
+function createWorld({width, height, domElement}){
+	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 1000)
+	camera.position.z = 12
+
+	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
+	renderer.setSize(width, height)
+	domElement.appendChild(renderer.domElement)
+	return {camera, renderer}
+}
+
+const onWindowResize = ({camera, renderer, window}) => {
+	const {width, height} = getWindowDimensions(window)
+	renderer.setSize(width, height)
+	camera.aspect = width / height
+	camera.updateProjectionMatrix()
+}
+
+const createObject = ({vertexShader, fragmentShader}) => {
+	const object = new THREE.Object3D()
+	const material = new THREE.ShaderMaterial({
+		vertexShader, fragmentShader,
+		wireframe: false, fog: true,
+		uniforms: {
+			time: {type: 'f', value: 0.0},
+			pointsize: {type: 'f', value: 0.0},
+			decay: {type: 'f', value: 0.0},
+			complex: {type: 'f', value: 0.0},
+			waves: {type: 'f', value: 0.0},
+			eqcolor: {type: 'f', value: 0.0},
+			fragment: {type: 'i', value: true},
+		},
+	})
+
+	const geo = new THREE.IcosahedronBufferGeometry(3, 7)
+	const mesh = new THREE.Points(geo, material)
+
+	object.add(mesh)
+	return {object, material}
+}
+
+function createGUI({camera, options}){
 	const gui = new dat.GUI()
 	const camGUI = gui.addFolder('Camera')
 	camGUI.add(camera.position, 'z', 3, 20).name('Zoom').listen()
@@ -105,20 +108,22 @@ function createGUI(){
 	return gui
 }
 
-function animation(){
-	requestAnimationFrame(animation)
-	var performance = Date.now() * 0.003
+function animation(enviroment){
+	requestAnimationFrame(() => {animation(enviroment)})
 
-	_primitive.mesh.rotation.y += options.perlin.vel
-	_primitive.mesh.rotation.x = (Math.sin(performance * options.spin.sinVel) * options.spin.ampVel )* Math.PI / 180
+	const {object, camera, renderer, options, start, scene, material} = enviroment
+	const now = Date.now()
 
-	material.uniforms['time'].value = options.perlin.speed * (Date.now() - start)
-	material.uniforms['pointsize'].value = options.perlin.pointsize
-	material.uniforms['decay'].value = options.perlin.decay
-	material.uniforms['complex'].value = options.perlin.complex
-	material.uniforms['waves'].value = options.perlin.waves
-	material.uniforms['eqcolor'].value = options.perlin.eqcolor
-	material.uniforms['fragment'].value = options.perlin.fragment
+	object.rotation.y += options.perlin.vel
+	object.rotation.x = (Math.sin(now * 0.003 * options.spin.sinVel) * options.spin.ampVel) * Math.PI / 180
+
+	material.uniforms.time.value = options.perlin.speed * (now - start)
+	material.uniforms.pointsize.value = options.perlin.pointsize
+	material.uniforms.decay.value = options.perlin.decay
+	material.uniforms.complex.value = options.perlin.complex
+	material.uniforms.waves.value = options.perlin.waves
+	material.uniforms.eqcolor.value = options.perlin.eqcolor
+	material.uniforms.fragment.value = options.perlin.fragment
 
 	camera.lookAt(scene.position)
 	renderer.render(scene, camera)
