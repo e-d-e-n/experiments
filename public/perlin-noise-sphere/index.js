@@ -1,4 +1,6 @@
 const options = {
+	radius: 3,
+	detail: 7,
 	perlin: {
 		vel: 0.002,
 		speed: 0.00050,
@@ -35,7 +37,7 @@ function init({window, document, options, start}){
 	const scene = new THREE.Scene()
 
 	const {camera, renderer} = createWorld({width, height, domElement})
-	const {object, material} = createObject({vertexShader, fragmentShader})
+	const {object, material} = createObject({options, vertexShader, fragmentShader})
 
 	scene.add(object)
 
@@ -63,7 +65,7 @@ const onWindowResize = ({camera, renderer, window}) => {
 	camera.updateProjectionMatrix()
 }
 
-const createObject = ({vertexShader, fragmentShader}) => {
+const createObject = ({options, vertexShader, fragmentShader}) => {
 	const object = new THREE.Object3D()
 	const material = new THREE.ShaderMaterial({
 		vertexShader, fragmentShader,
@@ -79,14 +81,14 @@ const createObject = ({vertexShader, fragmentShader}) => {
 		},
 	})
 
-	const geo = new THREE.IcosahedronBufferGeometry(3, 7)
+	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const mesh = new THREE.Points(geo, material)
 
 	object.add(mesh)
 	return {object, material}
 }
 
-function createGUI({camera, options}){
+function createGUI({options, camera}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 
