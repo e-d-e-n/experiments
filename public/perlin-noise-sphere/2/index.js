@@ -3,16 +3,10 @@ const options = {
 	radius: 3,
 	detail: 7,
 	perlin: {
-		vel: 0.002,
 		speed: 0.00050,
 		decay: 0.10,
-		complex: 0.30,
 		waves: 20.0,
 	},
-	spin: {
-		sinVel: 0.0,
-		ampVel: 80.0,
-	}
 }
 
 window.addEventListener('load', () => init({
@@ -72,7 +66,6 @@ const createObject = ({options, vertexShader}) => {
 			...uniforms,
 			time: {type: 'f', value: 0.0},
 			decay: {type: 'f', value: 0.0},
-			complex: {type: 'f', value: 0.0},
 			waves: {type: 'f', value: 0.0},
 		},
 	})
@@ -93,18 +86,14 @@ function createGUI({options, camera}){
 
 	const gui = new dat.GUI()
 	const camGUI = gui.addFolder('Camera')
-	camGUI.add(camera.position, 'z', 3, 20).name('Zoom').listen()
-	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity').listen()
+	camGUI.add(camera.position, 'z', 1, 20).name('Distance')
+	camGUI.open()
 
-	const mathGUI = gui.addFolder('Math Options')
-	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine').listen()
-	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude').listen()
-
-	const perlinGUI = gui.addFolder('Setup Perlin Noise')
-	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed').listen()
-	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay').listen()
-	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves').listen()
-	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex').listen()
+	const perlinGUI = gui.addFolder('Shader Options')
+	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
+	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
+	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves')
+	perlinGUI.open()
 
 	return {stats, gui}
 }
@@ -120,7 +109,6 @@ function animation(enviroment){
 
 	material.uniforms.time.value = options.perlin.speed * (now - start)
 	material.uniforms.decay.value = options.perlin.decay
-	material.uniforms.complex.value = options.perlin.complex
 	material.uniforms.waves.value = options.perlin.waves
 
 	camera.lookAt(scene.position)
