@@ -96,10 +96,12 @@ function createGUI({options, camera}){
 	const camGUI = gui.addFolder('Camera')
 	camGUI.add(camera.position, 'z', 3, 20).name('Distance').listen()
 	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity').listen()
+	camGUI.open()
 
 	const mathGUI = gui.addFolder('Math Options')
 	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine').listen()
 	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude').listen()
+	mathGUI.open()
 
 	const perlinGUI = gui.addFolder('Shader Options')
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed').listen()
@@ -108,6 +110,7 @@ function createGUI({options, camera}){
 	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
 	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex').listen()
 	perlinGUI.add(options.perlin, 'eqcolor', 0.0, 15.0).name('Hue').listen()
+	perlinGUI.open()
 
 	return {stats, gui}
 }
