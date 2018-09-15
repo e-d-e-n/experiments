@@ -1,3 +1,4 @@
+let paused = false
 const options = {
 	radius: 3,
 	detail: 7,
@@ -45,6 +46,7 @@ function init({window, document, options, start}){
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
+	domElement.addEventListener('dblclick', () => {paused = !paused})
 }
 
 function createWorld({width, height, domElement}){
@@ -112,6 +114,7 @@ function createGUI({options, camera}){
 
 function animation(enviroment){
 	requestAnimationFrame(() => {animation(enviroment)})
+	if(paused) return
 
 	enviroment.stats && enviroment.stats.begin()
 

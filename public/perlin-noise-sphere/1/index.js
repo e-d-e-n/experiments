@@ -1,3 +1,4 @@
+let paused = false
 const options = {
 	radius: 4.5,
 	detail: 7,
@@ -30,6 +31,7 @@ function init({window, document, options, start}){
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
+	domElement.addEventListener('dblclick', () => {paused = !paused})
 }
 
 function createWorld({width, height, domElement}){
@@ -51,10 +53,7 @@ const onWindowResize = ({camera, renderer, window}) => {
 
 const createObject = ({options}) => {
 	const object = new THREE.Object3D()
-	const {vertexShader, fragmentShader, uniforms} = THREE.ShaderLib.basic
-	const material = new THREE.ShaderMaterial({
-		vertexShader, fragmentShader, uniforms,
-	})
+	const material = new THREE.ShaderMaterial(THREE.ShaderLib.basic)
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const mesh = new THREE.Points(geo, material)
 	object.add(mesh)
@@ -71,6 +70,7 @@ function createGUI(){
 
 function animation(enviroment){
 	requestAnimationFrame(() => {animation(enviroment)})
+	if(paused) return
 
 	enviroment.stats && enviroment.stats.begin()
 
