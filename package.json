@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "eslint": "^5.6.0",
+    "eslint-watch": "^4.0.2",
     "harp": "^0.27.0",
     "harp-scripts": "^0.1.2"
   },
@@ -11,7 +13,8 @@
   "scripts": {
     "start": "harp-scripts start",
     "dev": "harp-scripts watch",
-    "test": "harp-scripts test",
-    "compile": "harp-scripts compile"
+    "test": "eslint public && harp-scripts test",
+    "compile": "harp-scripts compile",
+    "lint-watch": "yarn esw -w public"
   }
 }
