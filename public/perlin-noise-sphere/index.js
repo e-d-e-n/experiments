@@ -94,14 +94,14 @@ function createGUI({options, camera}){
 
 	const gui = new dat.GUI()
 	const camGUI = gui.addFolder('Camera')
-	camGUI.add(camera.position, 'z', 3, 20).name('Zoom').listen()
+	camGUI.add(camera.position, 'z', 3, 20).name('Distance').listen()
 	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity').listen()
 
 	const mathGUI = gui.addFolder('Math Options')
 	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine').listen()
 	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude').listen()
 
-	const perlinGUI = gui.addFolder('Setup Perlin Noise')
+	const perlinGUI = gui.addFolder('Shader Options')
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed').listen()
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay').listen()
 	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves').listen()
