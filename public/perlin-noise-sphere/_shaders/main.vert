@@ -1,5 +1,4 @@
 uniform float time;
-uniform float pointsize;
 uniform float decay;
 uniform float complex;
 uniform float waves;
@@ -22,5 +21,4 @@ void main(){
 
 	vec3 newPosition = (position) + (normal * displacement);
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-	gl_PointSize = pointsize;
 }

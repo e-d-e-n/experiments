@@ -7,8 +7,6 @@ const options = {
 		decay: 0.10,
 		complex: 0.30,
 		waves: 20.0,
-		eqcolor: 11.0,
-		fragment: true,
 	},
 	spin: {
 		sinVel: 0.0,
@@ -31,12 +29,11 @@ function init({window, document, options, start}){
 
 	const domElement = $('#container')
 	const {textContent: vertexShader} = $('#vertexShader')
-	const {textContent: fragmentShader} = $('#fragmentShader')
 
 	const scene = new THREE.Scene()
 
 	const {camera, renderer} = createWorld({width, height, domElement})
-	const {object, material} = createObject({options, vertexShader, fragmentShader})
+	const {object, material} = createObject({options, vertexShader})
 
 	scene.add(object)
 
@@ -64,20 +61,22 @@ const onWindowResize = ({camera, renderer, window}) => {
 	camera.updateProjectionMatrix()
 }
 
-const createObject = ({options, vertexShader, fragmentShader}) => {
+const createObject = ({options, vertexShader}) => {
 	const object = new THREE.Object3D()
+	const {fragmentShader, uniforms} = THREE.ShaderLib.basic
 	const material = new THREE.ShaderMaterial({
 		vertexShader, fragmentShader,
-		wireframe: false, fog: true,
 		uniforms: {
+			...uniforms,
 			time: {type: 'f', value: 0.0},
 			decay: {type: 'f', value: 0.0},
 			complex: {type: 'f', value: 0.0},
 			waves: {type: 'f', value: 0.0},
-			eqcolor: {type: 'f', value: 0.0},
-			fragment: {type: 'i', value: true},
 		},
 	})
+	material.defaultAttributeValues = {
+		color: [1, 1, 1],
+	}
 
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const mesh = new THREE.Points(geo, material)
@@ -103,9 +102,7 @@ function createGUI({options, camera}){
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed').listen()
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay').listen()
 	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves').listen()
-	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
 	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex').listen()
-	perlinGUI.add(options.perlin, 'eqcolor', 0.0, 15.0).name('Hue').listen()
 
 	return {stats, gui}
 }
@@ -115,18 +112,13 @@ function animation(enviroment){
 
 	enviroment.stats && enviroment.stats.begin()
 
-	const {object, camera, renderer, options, start, scene, material} = enviroment
+	const {camera, renderer, options, start, scene, material} = enviroment
 	const now = Date.now()
-
-	object.rotation.y += options.perlin.vel
-	object.rotation.x = (Math.sin(now * 0.003 * options.spin.sinVel) * options.spin.ampVel) * Math.PI / 180
 
 	material.uniforms.time.value = options.perlin.speed * (now - start)
 	material.uniforms.decay.value = options.perlin.decay
 	material.uniforms.complex.value = options.perlin.complex
 	material.uniforms.waves.value = options.perlin.waves
-	material.uniforms.eqcolor.value = options.perlin.eqcolor
-	material.uniforms.fragment.value = options.perlin.fragment
 
 	camera.lookAt(scene.position)
 	renderer.render(scene, camera)
