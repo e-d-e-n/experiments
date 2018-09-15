@@ -5,6 +5,7 @@ module.exports = {
     },
     "extends": "eslint:recommended",
     "globals": {
+      "Stats": true,
       "THREE": true,
       "dat": true,
     },

@@ -18,7 +18,7 @@ const options = {
 window.addEventListener('load', () => init({
 	window: window,
 	document: document,
-	start: new Date(),
+	start: Date.now(),
 	options: options,
 }))
 
@@ -39,8 +39,8 @@ function init({window, document, options, start}){
 
 	scene.add(object)
 
-	const gui = createGUI({camera, options})
-	animation({scene, object, camera, material, renderer, options, start})
+	const {stats} = createGUI({camera, options})
+	animation({scene, object, camera, material, renderer, options, start, stats})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
@@ -87,6 +87,9 @@ const createObject = ({vertexShader, fragmentShader}) => {
 }
 
 function createGUI({camera, options}){
+	const stats = new Stats()
+	document.body.appendChild(stats.dom)
+
 	const gui = new dat.GUI()
 	const camGUI = gui.addFolder('Camera')
 	camGUI.add(camera.position, 'z', 3, 20).name('Zoom').listen()
@@ -105,11 +108,13 @@ function createGUI({camera, options}){
 	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex').listen()
 	perlinGUI.add(options.perlin, 'eqcolor', 0.0, 15.0).name('Hue').listen()
 
-	return gui
+	return {stats, gui}
 }
 
 function animation(enviroment){
 	requestAnimationFrame(() => {animation(enviroment)})
+
+	enviroment.stats && enviroment.stats.begin()
 
 	const {object, camera, renderer, options, start, scene, material} = enviroment
 	const now = Date.now()
@@ -127,4 +132,6 @@ function animation(enviroment){
 
 	camera.lookAt(scene.position)
 	renderer.render(scene, camera)
+
+	enviroment.stats && enviroment.stats.end()
 }
