@@ -14,7 +14,7 @@
     "start": "harp-scripts start",
     "dev": "harp-scripts watch",
     "test": "eslint public && harp-scripts test",
-    "compile": "harp-scripts compile",
+    "compile": "harp-scripts compile && ./scripts/post-compile",
     "lint-watch": "yarn esw -w public"
   }
 }

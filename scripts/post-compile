@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+find 'www' -name '*.frag' -o -name '*.vert' -o -name '*.glsl' | xargs -n1 rm
