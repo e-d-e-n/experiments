@@ -3,4 +3,7 @@ html
 	head
 		link(rel='stylesheet' href='/reset.css')
 	body
+		if current.path.length < 3
+			h1 tcc-experiments
+			hr
 		!=yield
