@@ -11,10 +11,16 @@ const options = {
 	},
 }
 
-dat.GUI.prototype.addThreeColor=function(obj, name){
+dat.GUI.prototype.addThreeColor = function(obj, name){
 	var cache = {}
 	cache[name] = obj[name].getStyle()
 	return this.addColor(cache, name).onChange(value => obj[name].setStyle(value))
+}
+
+const bikeshed = () => {
+  const hex = Math.floor(Math.random() * 16777215).toString(16)
+  const pad = '000000'
+  return '#' + (pad + hex).slice(-pad.length)
 }
 
 window.addEventListener('load', () => init({
@@ -90,8 +96,9 @@ function createGUI({options, camera}){
 	document.body.appendChild(stats.dom)
 
 	const gui = new dat.GUI()
+
 	const sceneGUI = gui.addFolder('Scene')
-	sceneGUI.addThreeColor(options, 'background').name('Background')
+	const bgControl = sceneGUI.addThreeColor(options, 'background').name('Background')
 	sceneGUI.open()
 
 	const camGUI = gui.addFolder('Camera')
@@ -102,8 +109,19 @@ function createGUI({options, camera}){
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
 	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves')
-	perlinGUI.addThreeColor(options.perlin, 'color').name('Color')
+	const fgControl = perlinGUI.addThreeColor(options.perlin, 'color').name('Color')
 	perlinGUI.open()
+
+	const actions = {
+		ramdomizeColors: () => {
+			const result = hello(bikeshed(), {contrast: 4, hues: 0})
+			bgControl.setValue(result.base)
+			fgControl.setValue(result.color)
+		},
+	}
+
+	gui.add(actions, 'ramdomizeColors').name('RamdomColor')
+	actions.ramdomizeColors()
 
 	return {stats, gui}
 }
