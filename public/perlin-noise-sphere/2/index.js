@@ -69,9 +69,6 @@ const createObject = ({options, vertexShader}) => {
 			waves: {type: 'f', value: 0.0},
 		},
 	})
-	material.defaultAttributeValues = {
-		color: [1, 1, 1],
-	}
 
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const mesh = new THREE.Points(geo, material)
