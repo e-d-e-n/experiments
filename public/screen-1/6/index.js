@@ -4,7 +4,6 @@ const options = {
 	detail: 7,
 	background: new THREE.Color(0xffffff),
 	perlin: {
-		vel: 0.002,
 		speed: 0.00050,
 		decay: 0.10,
 		complexity: 0.30,
@@ -14,6 +13,7 @@ const options = {
 		fragment: true,
 	},
 	spin: {
+		vel: 0.002,
 		sinVel: 0.0,
 		ampVel: 80.0,
 	}
@@ -108,13 +108,13 @@ function createGUI({options, camera}){
 
 	const camGUI = gui.addFolder('Camera')
 	camGUI.add(camera.position, 'z', 1, 20).name('Distance')
-	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity')
 	camGUI.open()
 
-	const mathGUI = gui.addFolder('Math Options')
-	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine')
-	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude')
-	mathGUI.open()
+	const spinGUI = gui.addFolder('Rotation')
+	spinGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine')
+	spinGUI.add(options.spin, 'vel', 0.000, 0.02).name('Velocity')
+	spinGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude')
+	spinGUI.open()
 
 	const perlinGUI = gui.addFolder('Shader Options')
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
@@ -140,7 +140,7 @@ function animation(enviroment){
 
 	scene.background = options.background
 
-	object.rotation.y += options.perlin.vel
+	object.rotation.y += options.spin.vel
 	object.rotation.x = (Math.sin(now * 0.003 * options.spin.sinVel) * options.spin.ampVel) * Math.PI / 180
 
 	material.uniforms.time.value = options.perlin.speed * (now - start)

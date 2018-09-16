@@ -105,9 +105,6 @@ function createGUI({options, camera}){
 	camGUI.add(camera.position, 'z', 1, 20).name('Distance')
 	camGUI.open()
 
-	const mathGUI = gui.addFolder('Math Options')
-	mathGUI.open()
-
 	const perlinGUI = gui.addFolder('Shader Options')
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
