@@ -18,11 +18,15 @@ dat.GUI.prototype.addThreeColor = function(obj, name){
 	return this.addColor(cache, name).onChange(value => obj[name].setStyle(value))
 }
 
-const bikeshed = () => {
-  const hex = Math.floor(Math.random() * 16777215).toString(16)
-  const pad = '000000'
-  return '#' + (pad + hex).slice(-pad.length)
+const getRandomColor = () => {
+	const hex = Math.floor(Math.random() * 16777215).toString(16)
+	const pad = '000000'
+	return '#' + (pad + hex).slice(-pad.length)
 }
+
+/* globals hello */
+const getRandomColors = () => hello(getRandomColor(), {contrast: 4, hues: 0})
+
 
 window.addEventListener('load', () => init({
 	window: window,
@@ -117,9 +121,9 @@ function createGUI({options, camera}){
 
 	const actions = {
 		ramdomizeColors: () => {
-			const result = hello(bikeshed(), {contrast: 4, hues: 0})
-			bgControl.setValue(result.base)
-			fgControl.setValue(result.color)
+			const {base, color} = getRandomColors()
+			bgControl.setValue(base)
+			fgControl.setValue(color)
 		},
 	}
 
