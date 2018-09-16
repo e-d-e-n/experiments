@@ -8,6 +8,7 @@ const options = {
 		decay: 0.10,
 		waves: 20.0,
 		color: new THREE.Color(0xffffff),
+		point: 1.25,
 	},
 }
 
@@ -81,6 +82,7 @@ const createObject = ({options, vertexShader}) => {
 			time: {type: 'f', value: 0.0},
 			decay: {type: 'f', value: 0.0},
 			waves: {type: 'f', value: 0.0},
+			pointSize: {type: 'f', value: 0.0},
 		},
 	})
 
@@ -109,6 +111,7 @@ function createGUI({options, camera}){
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
 	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves')
+	perlinGUI.add(options.perlin, 'point', 1, 2).name('Point Size')
 	const fgControl = perlinGUI.addThreeColor(options.perlin, 'color').name('Color')
 	perlinGUI.open()
 
@@ -141,6 +144,7 @@ function animation(enviroment){
 	material.uniforms.decay.value = options.perlin.decay
 	material.uniforms.waves.value = options.perlin.waves
 	material.uniforms.diffuse.value = options.perlin.color
+	material.uniforms.pointSize.value = options.perlin.point
 
 	camera.lookAt(scene.position)
 	renderer.render(scene, camera)
