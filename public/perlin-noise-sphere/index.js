@@ -94,22 +94,22 @@ function createGUI({options, camera}){
 
 	const gui = new dat.GUI()
 	const camGUI = gui.addFolder('Camera')
-	camGUI.add(camera.position, 'z', 3, 20).name('Distance').listen()
-	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity').listen()
+	camGUI.add(camera.position, 'z', 1, 20).name('Distance')
+	camGUI.add(options.perlin, 'vel', 0.000, 0.02).name('Velocity')
 	camGUI.open()
 
 	const mathGUI = gui.addFolder('Math Options')
-	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine').listen()
-	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude').listen()
+	mathGUI.add(options.spin, 'sinVel', 0.0, 0.50).name('Sine')
+	mathGUI.add(options.spin, 'ampVel', 0.0, 90.00).name('Amplitude')
 	mathGUI.open()
 
 	const perlinGUI = gui.addFolder('Shader Options')
-	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed').listen()
-	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay').listen()
-	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves').listen()
+	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
+	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
+	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves')
 	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
-	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex').listen()
-	perlinGUI.add(options.perlin, 'eqcolor', 0.0, 15.0).name('Hue').listen()
+	perlinGUI.add(options.perlin, 'complex', 0.1, 1.00).name('Complex')
+	perlinGUI.add(options.perlin, 'eqcolor', 0.0, 15.0).name('Hue')
 	perlinGUI.open()
 
 	return {stats, gui}
