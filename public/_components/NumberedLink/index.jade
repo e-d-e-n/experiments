@@ -1,0 +1,4 @@
+mixin NumberedLink
+	a&attributes(attributes).NumberedLink
+		pre=attributes.href.split('/').reverse()[0].replace('-', '.') + ':\t'
+		span: block
