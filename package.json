@@ -7,7 +7,8 @@
     "eslint": "^5.6.0",
     "eslint-watch": "^4.0.2",
     "harp": "^0.27.0",
-    "harp-scripts": "^0.1.2"
+    "harp-scripts": "^0.1.2",
+    "juice": "^4.3.2"
   },
   "author": "Leonardo Dino <leonardo@kunstdesign.com.br>",
   "scripts": {
@@ -15,6 +16,7 @@
     "dev": "harp-scripts watch",
     "test": "eslint public && harp-scripts test",
     "compile": "harp-scripts compile && ./scripts/post-compile",
+    "offline": "yarn compile && ./scripts/make-offline",
     "lint-watch": "yarn esw -w public"
   }
 }

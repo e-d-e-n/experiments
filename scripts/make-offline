@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+inliner() {
+	local source_file="$1"
+	local source_dir="$(dirname $source_file)"
+	local dest_dir="$(echo $source_dir | sed 's|^www|dist|')"
+	local root_dir="$(echo $source_dir | sed 's|^www/*|/|')"
+	local dest_file="${dest_dir}/$(basename "$source_file")"
+	local concurrency="$(getconf _NPROCESSORS_ONLN)"
+
+  mkdir -p "$dest_dir"
+  sed "s|src=\"\./|src=\"${root_dir}/|g" < $source_file | juice --web-resources-relative-to www /dev/stdin "$dest_file"
+}
+
+export PATH="./node_modules/.bin:${PATH}"
+export -f inliner
+
+rm -rf dist
+find 'www' -name '*.html' | parallel -j ${concurrency:-1} 'inliner {}'

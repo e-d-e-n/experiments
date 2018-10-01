@@ -11,6 +11,6 @@ Desktop.ini
 node_modules
 *.log
 
-# harp
+# build
 www
-
+dist
