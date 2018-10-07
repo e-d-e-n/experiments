@@ -1,5 +1,5 @@
 let paused = false
-const frameRate = 60
+const frameRate = 15
 const enviroment = {stats: new Stats()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 
@@ -150,8 +150,7 @@ function initExample(){
 	}
 
 	function trackFaces(){
-		// setTimeout(trackFaces, 1000/frameRate)
-		requestAnimationFrame(trackFaces)
+		setTimeout(trackFaces, 1000/frameRate)
 		if(paused) return
 		enviroment.stats && enviroment.stats.begin()
 		imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
