@@ -20,7 +20,7 @@ const pickFace = face => ({
 })
 
 const publish = (brfv4, faces) => {
-	channel.postMessage(JSON.stringify(faces.filter(validFace).map(pickFace)))
+	channel.postMessage(faces.filter(validFace).map(pickFace))
 }
 
 const isWebAssemblySupported = (function() {

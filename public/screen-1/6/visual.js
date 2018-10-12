@@ -1,9 +1,7 @@
 let paused = false
 let faceData = []
 
-!((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {
-	try{faceData = JSON.parse(data)}catch(e){}
-})
+!((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
 
 const options = {
 	radius: 3,
