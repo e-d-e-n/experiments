@@ -1,12 +1,12 @@
 let paused = false
-const frameRate = 15
+const frameRate = 30
 const enviroment = {stats: new Stats()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 
 const channel = new BroadcastChannel('brfv4-faces')
 const validFace = ({state} = {}) => {
 	 if(state === 'state_face_tracking') return true
-	// if(state === 'state_face_tracking_start') return true
+	 if(state === 'state_face_tracking_start') return true
 	return false
 }
 
@@ -33,7 +33,7 @@ const publish = (brfv4, faces, imageDataCtx) => {
 
       for(var k = 0; k < face.vertices.length; k += 2) {
         imageDataCtx.beginPath();
-        imageDataCtx.arc(face.vertices[k], face.vertices[k + 1], 2, 0, 2 * Math.PI);
+        imageDataCtx.arc(face.vertices[k], face.vertices[k + 1], 1.5, 0, 2 * Math.PI);
         imageDataCtx.stroke();
       }
     }
