@@ -19,8 +19,30 @@ const pickFace = face => ({
 	rotationZ: face.rotationZ,
 })
 
-const publish = (brfv4, faces) => {
+const publish = (brfv4, faces, imageDataCtx) => {
 	channel.postMessage(faces.filter(validFace).map(pickFace))
+
+	for(var i = 0; i < faces.length; i++) {
+
+    var face = faces[i];
+
+    if(face.state === brfv4.BRFState.FACE_TRACKING_START ||
+      face.state === brfv4.BRFState.FACE_TRACKING) {
+
+      imageDataCtx.strokeStyle="#00a0ff";
+
+      for(var k = 0; k < face.vertices.length; k += 2) {
+        imageDataCtx.beginPath();
+        imageDataCtx.arc(face.vertices[k], face.vertices[k + 1], 2, 0, 2 * Math.PI);
+        imageDataCtx.stroke();
+      }
+    }
+  }
+	// faces.forEach(({vertices}) => {
+	// 	vertices.forEach(({x, y}) => {
+	// 		imageDataCtx.fillRect(x,y,1,1)
+	// 	})
+	// })
 }
 
 const isWebAssemblySupported = (function() {
@@ -155,9 +177,10 @@ function initExample(){
 		enviroment.stats && enviroment.stats.begin()
 		imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
 		imageDataCtx.drawImage(webcam, 0, 0, resolution.width, resolution.height)
+		imageDataCtx.setTransform( 1.0, 0, 0, 1, 0, 0)
 		const {data} = imageDataCtx.getImageData(0, 0, resolution.width, resolution.height)
 		brfManager.update(data)
-		publish(brfv4, brfManager.getFaces())
+		publish(brfv4, brfManager.getFaces(), imageDataCtx)
 
 		enviroment.stats && enviroment.stats.end()
 	}
