@@ -19,25 +19,25 @@ const pickFace = face => ({
 	rotationZ: face.rotationZ,
 })
 
-const publish = (brfv4, faces, imageDataCtx) => {
-	channel.postMessage(faces.filter(validFace).map(pickFace))
+const publish = faces => {
+	channel.postMessage(faces.map(pickFace))
+}
 
-	for(var i = 0; i < faces.length; i++) {
+const drawFeedback = (faces, resolution, imageDataCtx, imageData) => {
+	// mirror input data
+	imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
+	imageDataCtx.drawImage(imageData, 0, 0, resolution.width, resolution.height)
 
-    var face = faces[i];
-
-    if(face.state === brfv4.BRFState.FACE_TRACKING_START ||
-      face.state === brfv4.BRFState.FACE_TRACKING) {
-
-      imageDataCtx.strokeStyle="#00a0ff";
-
-      for(var k = 0; k < face.vertices.length; k += 2) {
-        imageDataCtx.beginPath();
-        imageDataCtx.arc(face.vertices[k], face.vertices[k + 1], 1.5, 0, 2 * Math.PI);
-        imageDataCtx.stroke();
-      }
-    }
-  }
+	// draw faces vertices
+	for(var i = 0; i < faces.length; i++){
+		var face = faces[i]
+		imageDataCtx.strokeStyle = '#00a0ff'
+		for(var k = 0; k < face.vertices.length; k += 2){
+			imageDataCtx.beginPath()
+			imageDataCtx.arc(face.vertices[k], face.vertices[k + 1], 1.5, 0, 2 * Math.PI)
+			imageDataCtx.stroke()
+		}
+	}
 }
 
 const isWebAssemblySupported = (function() {
@@ -174,10 +174,10 @@ function initExample(){
 		imageDataCtx.drawImage(webcam, 0, 0, resolution.width, resolution.height)
 		const {data} = imageDataCtx.getImageData(0, 0, resolution.width, resolution.height)
 		brfManager.update(data)
-		imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
-		imageDataCtx.drawImage(imageData, 0, 0, resolution.width, resolution.height)
-		publish(brfv4, brfManager.getFaces(), imageDataCtx)
 
+		const faces = brfManager.getFaces().filter(validFace)
+		publish(faces)
+		drawFeedback(faces, resolution, imageDataCtx, imageData)
 		enviroment.stats && enviroment.stats.end()
 	}
 }
