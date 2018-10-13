@@ -1,3 +1,4 @@
+const faceVertexCount = 68
 let paused = false
 let faceData = []
 
@@ -68,7 +69,6 @@ function init({window, document, options, start}){
 function createWorld({width, height, domElement}){
 	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 1000)
 	camera.position.z = 12
-	camera.up = new THREE.Vector3(0, 0, 1)
 
 	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
 	renderer.setSize(width, height)
@@ -108,7 +108,6 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 
 const createFaces = ({options}) => {
 	const material = new THREE.PointsMaterial({color: 0x000000, size: 1, sizeAttenuation: false})
-	const faceVertexCount = 68
 	const maxFaces = 8
 	const facePositions = new Array(maxFaces).fill(new Float32Array(faceVertexCount * 3))
 
@@ -191,31 +190,20 @@ function animation(enviroment){
 	material.uniforms.pointSize.value = options.perlin.point
 	material.uniforms.fragment.value = options.perlin.fragment
 
-	camera.lookAt(scene.position)
-	renderer.render(scene, camera)
-
 	faces.children.forEach((face, index) => {
 		const {factor, positionZ, pointSize} = options.faces
-		const points2d = (faceData[index] && faceData[index].vertices) || []
-		const visible = typeof points2d[0] === 'number'
-		face.visible = visible
-		if(!visible) return
+		const points2d = (faceData[index] && faceData[index].points) || []
+		face.visible = points2d.length === faceVertexCount
+		if(!face.visible) return
 
 		var positions = face.material.size = pointSize
 		var positions = face.geometry.attributes.position.array
-		let index3d = 0
+		let index3d = 0
 
-		for(let index2d = 0; index2d < points2d.length; index2d++){
-			index3d += 1
-			if(index2d % 2 === 0){
-				positions[index3d] = ((points2d[index2d] / 640) * factor) + (factor / -2)
-			}else{
-				positions[index3d] = ((points2d[index2d] / 480) * factor) + (factor / -2)
-			}
-			if(index2d % 2 === 0){
-				index3d += 1
-				positions[index3d] = positionZ
-			}
+		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
+			positions[index3d++] = ((points2d[index2d].x / 640) * factor) + (factor / -2)
+			positions[index3d++] = ((points2d[index2d].y / 480) * factor) + (factor / -2)
+			positions[index3d++] = positionZ
 		}
 
 		face.geometry.attributes.position.needsUpdate = true
@@ -244,7 +232,7 @@ function animation(enviroment){
 	})()
 
 
-
+	renderer.render(scene, camera)
 
 	enviroment.stats && enviroment.stats.end()
 }
