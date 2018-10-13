@@ -112,6 +112,7 @@ const createFaces = ({options}) => {
 	const facePositions = new Array(maxFaces).fill(new Float32Array(faceVertexCount * 3))
 
 	const faces = new THREE.Group()
+	faces.rotation.z = Math.PI
 
 	facePositions.forEach(positions => {
 		const geo = new THREE.BufferGeometry()

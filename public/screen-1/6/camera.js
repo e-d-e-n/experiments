@@ -170,11 +170,12 @@ function initExample(){
 		setTimeout(trackFaces, 1000/frameRate)
 		if(paused) return
 		enviroment.stats && enviroment.stats.begin()
-		imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
+		imageDataCtx.setTransform(1, 0, 0, 1, 0, 0)
 		imageDataCtx.drawImage(webcam, 0, 0, resolution.width, resolution.height)
-		imageDataCtx.setTransform( 1.0, 0, 0, 1, 0, 0)
 		const {data} = imageDataCtx.getImageData(0, 0, resolution.width, resolution.height)
 		brfManager.update(data)
+		imageDataCtx.setTransform(-1, 0, 0, 1, resolution.width, 0)
+		imageDataCtx.drawImage(imageData, 0, 0, resolution.width, resolution.height)
 		publish(brfv4, brfManager.getFaces(), imageDataCtx)
 
 		enviroment.stats && enviroment.stats.end()
