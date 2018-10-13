@@ -1,5 +1,5 @@
 let paused = false
-const frameRate = 30
+const frameRate = 15
 const enviroment = {stats: new Stats()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 
@@ -38,11 +38,6 @@ const publish = (brfv4, faces, imageDataCtx) => {
       }
     }
   }
-	// faces.forEach(({vertices}) => {
-	// 	vertices.forEach(({x, y}) => {
-	// 		imageDataCtx.fillRect(x,y,1,1)
-	// 	})
-	// })
 }
 
 const isWebAssemblySupported = (function() {
