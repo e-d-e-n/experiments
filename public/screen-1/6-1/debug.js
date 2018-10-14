@@ -2,7 +2,8 @@ const enviroment = {stats: new Stats()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 let faces = []
 let paused = false
-!((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faces = data})
+
+!((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => animate(faces = data))
 
 const webcam = {
 	videoWidth: 640,
@@ -22,7 +23,7 @@ const imageDataCtx = imageData.getContext('2d')
 const formatFloat = float => (Math.sign(float) !== -1 ? '+' : '') + (+float).toFixed(10)
 const formatIndex = index => `#00${index}`
 const animate = () => {
-	requestAnimationFrame(animate)
+
 	if(paused) return
 	enviroment.stats && enviroment.stats.begin()
 	imageDataCtx.clearRect(0, 0, imageData.width, imageData.height)
