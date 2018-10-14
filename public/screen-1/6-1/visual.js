@@ -30,6 +30,19 @@ dat.GUI.prototype.addThreeColor = function(obj, name){
 	return this.addColor(cache, name).onChange(value => obj[name].setStyle(value))
 }
 
+const applyFacesMatrix = ({faces, factor = options.faces.factor}) => {
+	const scale = (1/480) * factor
+	const translateY = factor / 2
+	const translateX = -translateY * (640 / 480)
+	faces.matrix.set(/*
+		          |            |            |            |*/
+		     scale,           0,           0,  translateX,
+		         0,      -scale,           0,  translateY,
+		         0,           0,           1,           0,
+		         0,           0,           0,           1,
+	)
+}
+
 window.addEventListener('load', () => init({
 	window: window,
 	document: document,
@@ -56,7 +69,7 @@ function init({window, document, options, start}){
 	scene.add(plasma)
 	scene.add(faces)
 
-	const {stats} = createGUI({camera, options})
+	const {stats} = createGUI({camera, faces, options})
 	animation({scene, plasma, camera, material, renderer, options, start, stats, faces})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
@@ -111,16 +124,7 @@ const createFaces = ({options}) => {
 
 	const faces = new THREE.Group()
 	faces.matrixAutoUpdate = false
-	const scale = (1/480) * options.faces.factor
-	const translateY = options.faces.factor / 2
-	const translateX = -translateY * (640 / 480)
-	faces.matrix.set(/*
-		          |            |            |            |*/
-		     scale,           0,           0,  translateX,
-		         0,      -scale,           0,  translateY,
-		         0,           0,           1,           0,
-		         0,           0,           0,           1,
-	)
+	applyFacesMatrix({faces})
 
 	facePositions.forEach(positions => {
 		const geo = new THREE.BufferGeometry()
@@ -133,7 +137,7 @@ const createFaces = ({options}) => {
 	return {faces}
 }
 
-function createGUI({options, camera}){
+function createGUI({options, camera, faces}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 
@@ -158,9 +162,9 @@ function createGUI({options, camera}){
 	// perlinGUI.open()
 
 	const facesGUI = gui.addFolder('Faces options')
-	facesGUI.add(options.faces, 'factor', -10, 10)
+	facesGUI.add(options.faces, 'factor', -10, 10).onChange(factor => applyFacesMatrix({faces, factor}))
 	facesGUI.add(options.faces, 'positionZ', 0, 13)
-	facesGUI.add(options.faces, 'pointSize', 0.1, 10)
+	facesGUI.add(options.faces, 'pointSize', 1, 5)
 
 	facesGUI.open()
 
