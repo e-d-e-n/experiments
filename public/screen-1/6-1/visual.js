@@ -13,14 +13,15 @@ const options = {
 		decay: 0.10,
 		complexity: 0.30,
 		waves: 20.0,
-		huediff: 0,
-		point: 1.25,
+		huediff: 11.0,
+		point: 1,
 		fragment: true,
+		opacity: 0.05,
 	},
 	faces: {
 		factor: (640 / 480) * 2, // 2.66
 		positionZ: 9.5,
-		pointSize: 2.5,
+		pointSize: 2,
 	},
 }
 
@@ -106,8 +107,11 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 			huediff: {type: 'f', value: 0.0},
 			pointSize: {type: 'f', value: 0.0},
 			fragment: {type: 'i', value: true},
+			opacity: {type: 'f', value: 0.01},
 		},
 	})
+	material.transparent = true
+
 
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const mesh = new THREE.Points(geo, material)
@@ -159,6 +163,7 @@ function createGUI({options, camera, faces}){
 	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
 	perlinGUI.add(options.perlin, 'complexity', 0.1, 1.00).name('Complexity')
 	perlinGUI.add(options.perlin, 'huediff', 0.0, 15.0).name('Hue')
+	perlinGUI.add(options.perlin, 'opacity', 0.0, 1.0).name('Opacity')
 	// perlinGUI.open()
 
 	const facesGUI = gui.addFolder('Faces options')
@@ -193,6 +198,7 @@ function animation(enviroment){
 	material.uniforms.huediff.value = options.perlin.huediff
 	material.uniforms.pointSize.value = options.perlin.point
 	material.uniforms.fragment.value = options.perlin.fragment
+	material.uniforms.opacity.value = options.perlin.opacity
 
 	faces.children.forEach((face, index) => {
 		const {factor, positionZ, pointSize} = options.faces
