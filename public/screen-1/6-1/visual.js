@@ -5,6 +5,7 @@ let faceData = []
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
 
 const options = {
+	maxFaces: 8,
 	radius: 3,
 	detail: 7,
 	background: new THREE.Color(0xffffff),
@@ -123,20 +124,13 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 
 const createFaces = ({options}) => {
 	const material = new THREE.PointsMaterial({color: 0x000000, size: 1, sizeAttenuation: false})
-	const maxFaces = 8
-	const facePositions = new Array(maxFaces).fill(new Float32Array(faceVertexCount * 3))
+	const positions = new Float32Array(faceVertexCount * 3 * options.maxFaces)
+	const geometry = new THREE.BufferGeometry()
 
-	const faces = new THREE.Group()
-	faces.matrixAutoUpdate = false
-	applyFacesMatrix({faces})
-
-	facePositions.forEach(positions => {
-		const geo = new THREE.BufferGeometry()
-		geo.addAttribute('position', new THREE.BufferAttribute(positions, 3))
-		const mesh = new THREE.Points(geo, material)
-		mesh.visible = false
-		faces.add(mesh)
-	})
+	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
+	const faces = new THREE.Points(geometry, material)
+	 faces.matrixAutoUpdate = false
+	 applyFacesMatrix({faces})
 
 	return {faces}
 }
@@ -200,25 +194,21 @@ function animation(enviroment){
 	material.uniforms.fragment.value = options.perlin.fragment
 	material.uniforms.opacity.value = options.perlin.opacity
 
-	faces.children.forEach((face, index) => {
-		const {factor, positionZ, pointSize} = options.faces
-		const points2d = (faceData[index] && faceData[index].points) || []
-		face.visible = points2d.length === faceVertexCount
-		if(!face.visible) return
-
-		var positions = face.material.size = pointSize
-		var positions = face.geometry.attributes.position.array
-		let index3d = 0
-
+	const {factor, positionZ, pointSize} = options.faces
+	faces.material.size = pointSize
+	const positions = faces.geometry.attributes.position.array
+	let index3d = 0
+	faceData.forEach(({points} = {}, index) => {
+		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
-			positions[index3d++] = points2d[index2d].x
-			positions[index3d++] = points2d[index2d].y
+			positions[index3d++] = points[index2d].x
+			positions[index3d++] = points[index2d].y
 			positions[index3d++] = positionZ
 		}
-
-		face.geometry.attributes.position.needsUpdate = true
 	})
 
+	faces.geometry.setDrawRange(0, index3d / 3)
+	faces.geometry.attributes.position.needsUpdate = true
 
 	renderer.render(scene, camera)
 
