@@ -5,6 +5,7 @@ let faceData = []
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
 
 const options = {
+	maxFaces: 8,
 	radius: 3,
 	detail: 7,
 	background: new THREE.Color(0xffffff),
@@ -64,14 +65,14 @@ function init({window, document, options, start}){
 	const scene = new THREE.Scene()
 
 	const {camera, renderer} = createWorld({width, height, domElement})
-	const {plasma, material} = createPlasma({options, vertexShader, fragmentShader})
+	const {plasma} = createPlasma({options, vertexShader, fragmentShader})
 	const {faces} = createFaces({options})
 
 	scene.add(plasma)
 	scene.add(faces)
 
 	const {stats} = createGUI({camera, faces, options})
-	animation({scene, plasma, camera, material, renderer, options, start, stats, faces})
+	animation({scene, plasma, camera, renderer, options, start, stats, faces})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
@@ -96,9 +97,8 @@ const onWindowResize = ({camera, renderer, window}) => {
 }
 
 const createPlasma = ({options, vertexShader, fragmentShader}) => {
-	const plasma = new THREE.Object3D()
 	const material = new THREE.ShaderMaterial({
-		vertexShader, fragmentShader,
+		vertexShader, fragmentShader, transparent: true,
 		uniforms: {
 			time: {type: 'f', value: 0.0},
 			decay: {type: 'f', value: 0.0},
@@ -110,33 +110,23 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 			opacity: {type: 'f', value: 0.01},
 		},
 	})
-	material.transparent = true
-
 
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
-	const mesh = new THREE.Points(geo, material)
+	const plasma = new THREE.Points(geo, material)
 
-	plasma.add(mesh)
-	return {plasma, material}
+	return {plasma}
 }
 
 
 const createFaces = ({options}) => {
 	const material = new THREE.PointsMaterial({color: 0x000000, size: 1, sizeAttenuation: false})
-	const maxFaces = 8
-	const facePositions = new Array(maxFaces).fill(new Float32Array(faceVertexCount * 3))
+	const positions = new Float32Array(faceVertexCount * 3 * options.maxFaces)
+	const geometry = new THREE.BufferGeometry()
 
-	const faces = new THREE.Group()
+	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
+	const faces = new THREE.Points(geometry, material)
 	faces.matrixAutoUpdate = false
 	applyFacesMatrix({faces})
-
-	facePositions.forEach(positions => {
-		const geo = new THREE.BufferGeometry()
-		geo.addAttribute('position', new THREE.BufferAttribute(positions, 3))
-		const mesh = new THREE.Points(geo, material)
-		mesh.visible = false
-		faces.add(mesh)
-	})
 
 	return {faces}
 }
@@ -184,41 +174,37 @@ function animation(enviroment){
 
 	const {
 		camera, renderer, options, start,
-		scene, material, faces,
+		scene, plasma, faces,
 	} = enviroment
 
 	const now = Date.now()
 
 	scene.background = options.background
 
-	material.uniforms.time.value = options.perlin.speed * (now - start)
-	material.uniforms.decay.value = options.perlin.decay
-	material.uniforms.complexity.value = options.perlin.complexity
-	material.uniforms.waves.value = options.perlin.waves
-	material.uniforms.huediff.value = options.perlin.huediff
-	material.uniforms.pointSize.value = options.perlin.point
-	material.uniforms.fragment.value = options.perlin.fragment
-	material.uniforms.opacity.value = options.perlin.opacity
+	plasma.material.uniforms.time.value = options.perlin.speed * (now - start)
+	plasma.material.uniforms.decay.value = options.perlin.decay
+	plasma.material.uniforms.complexity.value = options.perlin.complexity
+	plasma.material.uniforms.waves.value = options.perlin.waves
+	plasma.material.uniforms.huediff.value = options.perlin.huediff
+	plasma.material.uniforms.pointSize.value = options.perlin.point
+	plasma.material.uniforms.fragment.value = options.perlin.fragment
+	plasma.material.uniforms.opacity.value = options.perlin.opacity
 
-	faces.children.forEach((face, index) => {
-		const {factor, positionZ, pointSize} = options.faces
-		const points2d = (faceData[index] && faceData[index].points) || []
-		face.visible = points2d.length === faceVertexCount
-		if(!face.visible) return
-
-		var positions = face.material.size = pointSize
-		var positions = face.geometry.attributes.position.array
-		let index3d = 0
-
+	const {factor, positionZ, pointSize} = options.faces
+	faces.material.size = pointSize
+	const positions = faces.geometry.attributes.position.array
+	let index3d = 0
+	faceData.forEach(({points} = {}, index) => {
+		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
-			positions[index3d++] = points2d[index2d].x
-			positions[index3d++] = points2d[index2d].y
+			positions[index3d++] = points[index2d].x
+			positions[index3d++] = points[index2d].y
 			positions[index3d++] = positionZ
 		}
-
-		face.geometry.attributes.position.needsUpdate = true
 	})
 
+	faces.geometry.setDrawRange(0, index3d / 3)
+	faces.geometry.attributes.position.needsUpdate = true
 
 	renderer.render(scene, camera)
 
