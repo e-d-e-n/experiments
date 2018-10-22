@@ -5,10 +5,7 @@ let paused = false
 
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => animate(faces = data))
 
-const webcam = {
-	videoWidth: 640,
-	videoHeight: 480,
-}
+const webcam = {videoWidth: 640, videoHeight: 480}
 
 const circleRadians = 2 * Math.PI
 const imageData = document.getElementById('_imageData')
@@ -20,6 +17,27 @@ imageData.style.height = webcam.videoHeight + 'px'
 imageData.addEventListener('dblclick', () => {paused = !paused})
 const imageDataCtx = imageData.getContext('2d')
 
+const HEAD_SCALE = {x: 1 + 1/5, y: 1 + 1/2.5}
+
+const getFaceRect = ({x, y, scale, rotationZ}) => {
+	const width = scale * HEAD_SCALE.x
+	const height = scale * HEAD_SCALE.y
+	const centerX = x
+	const centerY = y
+	const originX = (width/-2)
+	const originY = (height/-2) + (height / 3.5)
+	const destX = (width/2) - originX
+	const destY = (height/2) - originY + (height / 3.5)
+	return {
+		originX, originY,
+		centerX, centerY,
+		destX, destY,
+		width, height,
+		rotation2d: rotationZ,
+	}
+}
+
+
 const formatFloat = float => (Math.sign(float) !== -1 ? '+' : '') + (+float).toFixed(10)
 const formatIndex = index => `#00${index}`
 const animate = () => {
@@ -30,10 +48,32 @@ const animate = () => {
 	for(var i = 0; i < faces.length; i++){
 		var face = faces[i]
 
+		imageDataCtx.fillStyle = '#0af'
 		for(var k = 0; k < face.vertices.length; k += 2){
-			imageDataCtx.fillStyle = k === 27 * 2 ? '#f00' : '#0af'
 			imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
 		}
+
+		imageDataCtx.strokeStyle = '#ff0'
+		imageDataCtx.strokeRect(
+			(face.points[27].x - face.scale / 2) -1,
+			(face.points[27].y - face.scale / 2) -1,
+			face.scale, face.scale,
+		)
+
+		const faceRect = getFaceRect({...face, ...face.points[27]})
+		imageDataCtx.strokeStyle = '#f0f'
+		imageDataCtx.strokeRect(faceRect.centerX -2.5, faceRect.centerY -2.5, 5, 5)
+
+		imageDataCtx.save()
+		imageDataCtx.strokeStyle = '#ccc'
+		imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
+		imageDataCtx.rotate(faceRect.rotation2d)
+		imageDataCtx.strokeRect(
+			faceRect.originX -1, faceRect.originY -1,
+			faceRect.destX, faceRect.destY,
+		)
+		imageDataCtx.restore()
+
 	}
 	debugData.innerHTML = faces.map((face, index) => ([
 		`face ${formatIndex(index)}:`,
