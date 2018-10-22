@@ -218,7 +218,7 @@ function animation(enviroment){
 	let index3d = 0
 	 posts.children.forEach(post => post.visible = false)
 
-	faceData.forEach(({points, ...props} = {}, index) => {
+	faceData.forEach(({points, scale, ...props} = {}, index) => {
 		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
 			positions[index3d++] = points[index2d].x
@@ -232,11 +232,12 @@ function animation(enviroment){
 		const translateX = (-0.5 + (postX/640)) * +1.33
 		const translateY = (-0.5 + (postY/480)) * -1
 		const translateZ = 0
-		post.matrix = new THREE.Matrix4().set(
-			1/factor,    0,           0,           translateX,
-			0,           1/factor,    0,           translateY,
-			0,           0,           1,           translateZ,
-			0,           0,           0,           1,
+		const oScale = (scale/480) * 2
+		post.matrix.set(
+			  oScale,           0,           0,  translateX,
+			       0,      oScale,           0,  translateY,
+			       0,           0,           1,  translateZ,
+			       0,           0,           0,           1,
 		)
 	})
 	 posts.matrix.set(/*

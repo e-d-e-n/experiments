@@ -48,24 +48,24 @@ const animate = () => {
 	for(var i = 0; i < faces.length; i++){
 		var face = faces[i]
 
-		// imageDataCtx.fillStyle = '#0af'
-		// for(var k = 0; k < face.vertices.length; k += 2){
-		// 	imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
-		// }
+		imageDataCtx.fillStyle = '#0af'
+		for(var k = 0; k < face.vertices.length; k += 2){
+			imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
+		}
 
-// 		imageDataCtx.strokeStyle = '#660'
-// 		imageDataCtx.strokeRect(
-// 			(face.points[27].x - face.scale / 2) -1,
-// 			(face.points[27].y - face.scale / 2) -1,
-// 			face.scale, face.scale,
-// 		)
-//
-// 		imageDataCtx.strokeStyle = '#060'
-// 		imageDataCtx.strokeRect(
-// 			(face.points[27].x - face.scale / 2) -1,
-// 			(face.points[27].y - face.scale ) -1,
-// 			face.scale, face.scale * 2,
-// 		)
+		imageDataCtx.strokeStyle = '#660'
+		imageDataCtx.strokeRect(
+			(face.points[27].x - face.scale / 2) -1,
+			(face.points[27].y - face.scale / 2) -1,
+			face.scale, face.scale,
+		)
+
+		imageDataCtx.strokeStyle = '#060'
+		imageDataCtx.strokeRect(
+			(face.points[27].x - face.scale / 2) -1,
+			(face.points[27].y - face.scale ) -1,
+			face.scale, face.scale * 2,
+		)
 
 		const faceRect = getFaceRect({...face, ...face.points[27]})
 		imageDataCtx.strokeStyle = '#f0f'
