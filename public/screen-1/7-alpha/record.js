@@ -33,7 +33,7 @@ button.addEventListener('click', () => {
 		case 'IDLE':
 			state = 'ACTIVE'
 			button.innerHTML = 'stop and download'
-			append = event => (event || []).length && data.push(event),
+			append = event => (event || []).length && data.push(event)
 		break
 		case 'ACTIVE':
 			state = 'IDLE'
