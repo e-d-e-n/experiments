@@ -134,7 +134,6 @@ const createFaces = ({options}) => {
 	applyFacesMatrix({faces})
 
 	const posts = new THREE.Group()
-	applyFacesMatrix({faces: posts})
 
 	Array(options.maxFaces).fill(0).forEach(() => {
 		const geometry = new THREE.PlaneBufferGeometry(0.5, 1)
@@ -178,14 +177,13 @@ function createGUI({options, camera, faces}){
 	facesGUI.add(options.faces, 'factor', -10, 10).onChange(factor => applyFacesMatrix({faces, factor}))
 	facesGUI.add(options.faces, 'positionZ', 0, 13)
 	facesGUI.add(options.faces, 'pointSize', 1, 5)
-
-	facesGUI.open()
+	// facesGUI.open()
 
 	return {stats, gui}
 }
 
 function animation(enviroment){
-	requestAnimationFrame(() => {animation(enviroment)})
+	if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
 	if(paused) return
 
 	enviroment.stats && enviroment.stats.begin()
@@ -215,7 +213,7 @@ function animation(enviroment){
 	let index3d = 0
 	 posts.children.forEach(post => post.visible = false)
 
-	faceData.forEach(({points, scale} = {}, index) => {
+	faceData.forEach(({points, scale, ...props} = {}, index) => {
 		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
 			positions[index3d++] = points[index2d].x
@@ -226,12 +224,34 @@ function animation(enviroment){
 		post.visible = true
 		const {x: postX, y: postY} = points[27]
 		const _scale = (scale / (480/2))
-		post.matrix = new THREE.Matrix4().set(
-			_scale,           0,           0,           postX/(640 * factor * +1),
-			0,           _scale,           0,           postY/(480 * factor * -1),
-			0,           0,           1,           0,
-			0,           0,           0,           1,
-		)
+
+		// const positionArray = [
+		// 	-1 + postX/(640  * +0.5),
+		// 	0.75 + postY/(480  * -0.5),
+		// 	_scale,
+		// 	// -_scale,
+		// ]
+
+		const positionArray = (() => {
+			const scale = (1/480)
+			const translateX = -1 + postX/(640  * +0.5)
+			const translateY = 0.75 + postY/(480  * -0.5)
+
+			return [translateY, translateY, -_scale]
+		})()
+
+		post.position.set(...positionArray)
+		post.rotation.set(0, 0, 0)
+		post.scale.set(1, 1, 1)
+		post.updateMatrix()
+
+
+		 // post.rotation.set(props.rotationX, props.rotationY , props.rotationZ * -1)
+		 post.rotation.set(0, 0 , props.rotationZ * -1)
+		post.updateMatrix()
+
+		post.scale.set(_scale, _scale, 1)
+		post.updateMatrix()
 	})
 	 posts.matrix.set(/*
 	 	          |            |            |            |*/
