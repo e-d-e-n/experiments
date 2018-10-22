@@ -24,9 +24,11 @@ const options = {
 		opacity: 0.01,
 	},
 	faces: {
-		// factor: (640 / 480) * 2, // 2.66
-		factor: 2.541752751905165,
-		positionZ: 9.554614733276884,
+		// magic
+		// factor: 2.541752751905165,
+		// positionZ: 9.554614733276884,
+		factor: (640 / 480) * 2, // 2.66
+		positionZ: 9.45,
 		pointSize: 2,
 	},
 }
