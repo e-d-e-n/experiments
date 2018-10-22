@@ -1,10 +1,17 @@
 let paused = true
 let frames = []
 let index = 0
-const options = {fps: 10}
+const options = {fps: 30, raf: false}
 const status = document.querySelector('#status')
 const body = document.body
 const channel = new BroadcastChannel('brfv4-faces')
+const enviroment = {gui: new dat.GUI()}
+
+
+!(({gui}) => {
+	gui.add(options, 'fps', 0, 60, 1).name('fps')
+	gui.add(options, 'raf').name('animationFrame')
+})(enviroment)
 
 const decompressFace = data => ({
 	...data,
@@ -35,6 +42,7 @@ const pause = () => {
 
 body.addEventListener('dragenter', event => {event.preventDefault()})
 body.addEventListener('dragover',  event => {event.preventDefault()})
+body.addEventListener('dblclick', () => {paused = !paused})
 body.addEventListener('drop', event => {
 	const reader = new FileReader()
 	reader.onerror = e => alert(e.message)
@@ -52,7 +60,8 @@ body.addEventListener('drop', event => {
 })
 
 const animate = () => {
-	setTimeout(animate, 1000 / options.fps)
+	const loopFn = options.raf ? requestAnimationFrame : setTimeout
+	loopFn(animate, 1000 / options.fps)
 	if(paused || !frames.length) return
 	index = (index + 1) % frames.length
 	publish(frames[index])
