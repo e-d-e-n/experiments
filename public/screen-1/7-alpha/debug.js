@@ -71,15 +71,15 @@ const animate = () => {
 		imageDataCtx.strokeStyle = '#f0f'
 		imageDataCtx.strokeRect(faceRect.centerX -2.5, faceRect.centerY -2.5, 5, 5)
 
-		// imageDataCtx.save()
-		// imageDataCtx.strokeStyle = '#ccc'
-		// imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
-		// imageDataCtx.rotate(faceRect.rotation2d)
-		// imageDataCtx.strokeRect(
-		// 	faceRect.originX -1, faceRect.originY -1,
-		// 	faceRect.destX, faceRect.destY,
-		// )
-		// imageDataCtx.restore()
+		 imageDataCtx.save()
+		 imageDataCtx.strokeStyle = '#ccc'
+		 imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
+		 // imageDataCtx.rotate(faceRect.rotation2d)
+		 imageDataCtx.strokeRect(
+		 	faceRect.originX -1, faceRect.originY -1,
+		 	faceRect.destX, faceRect.destY,
+		 )
+		 imageDataCtx.restore()
 
 	}
 	if(debugData){

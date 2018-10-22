@@ -230,7 +230,7 @@ function animation(enviroment){
 		const {x: postX, y: postY} = points[27]
 
 		const translateX = (-0.5 + (postX/640)) * +1.33
-		const translateY = (-0.5 + (postY/480)) * -1
+		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/5) / 3.5)
 		const translateZ = 0
 		const oScale = (scale/480) * 2
 		post.matrix.set(
