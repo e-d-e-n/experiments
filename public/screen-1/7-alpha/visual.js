@@ -126,6 +126,7 @@ const createFaces = ({options}) => {
 	const material = new THREE.PointsMaterial({color: 0x000000, size: 1, sizeAttenuation: false})
 	const positions = new Float32Array(faceVertexCount * 3 * options.maxFaces)
 	const geometry = new THREE.BufferGeometry()
+	geometry.dynamic = true
 
 	geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
 	const faces = new THREE.Points(geometry, material)
@@ -212,9 +213,9 @@ function animation(enviroment){
 	faces.material.size = pointSize
 	const positions = faces.geometry.attributes.position.array
 	let index3d = 0
-	// posts.children.forEach(post => post.visible = false)
+	 posts.children.forEach(post => post.visible = false)
 
-	faceData.forEach(({points} = {}, index) => {
+	faceData.forEach(({points, scale} = {}, index) => {
 		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
 			positions[index3d++] = points[index2d].x
@@ -222,24 +223,23 @@ function animation(enviroment){
 			positions[index3d++] = positionZ
 		}
 		const post = posts.children[index]
-		// post.visible = true
+		post.visible = true
 		const {x: postX, y: postY} = points[27]
-		// not working
-		 post.matrix.set(/*
-		 	          |            |            |            |*/
-		 	         1,           0,           0,       postX,
-		 	         0,           1,           0,       postY,
-		 	         0,           0,           1,           1,
-		 	         0,           0,           0,           1,
-		 )
+		const _scale = (scale / (480/2))
+		post.matrix = new THREE.Matrix4().set(
+			_scale,           0,           0,           postX/(640 * factor * +1),
+			0,           _scale,           0,           postY/(480 * factor * -1),
+			0,           0,           1,           0,
+			0,           0,           0,           1,
+		)
 	})
-	posts.matrix.set(/*
-		          |            |            |            |*/
-		    factor,           0,           0,           0,
-		         0,      factor,           0,           0,
-		         0,           0,           1,   positionZ,
-		         0,           0,           0,           1,
-	)
+	 posts.matrix.set(/*
+	 	          |            |            |            |*/
+	 	    factor,           0,           0,           0,
+	 	         0,      factor,           0,           0,
+	 	         0,           0,           1,   positionZ,
+	 	         0,           0,           0,           1,
+	 )
 
 	faces.geometry.setDrawRange(0, index3d / 3)
 	faces.geometry.attributes.position.needsUpdate = true

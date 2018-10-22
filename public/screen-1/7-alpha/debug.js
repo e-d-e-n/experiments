@@ -30,13 +30,14 @@ const animate = () => {
 	for(var i = 0; i < faces.length; i++){
 		var face = faces[i]
 
-		imageDataCtx.fillStyle = '#0af'
 		for(var k = 0; k < face.vertices.length; k += 2){
+			imageDataCtx.fillStyle = k === 27 * 2 ? '#f00' : '#0af'
 			imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
 		}
 	}
 	debugData.innerHTML = faces.map((face, index) => ([
 		`face ${formatIndex(index)}:`,
+		`| position(${face.points[27].x}, ${face.points[27].y})`,
 		`| scale(${formatFloat(face.scale)})`,
 		`| rotation(${formatFloat(face.rotationX)}, ${formatFloat(face.rotationY)}, ${formatFloat(face.rotationZ)})`,
 		`'`,
