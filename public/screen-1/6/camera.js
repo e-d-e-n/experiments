@@ -5,8 +5,8 @@ enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 
 const channel = new BroadcastChannel('brfv4-faces')
 const validFace = ({state} = {}) => {
-	 if(state === 'state_face_tracking') return true
-	 if(state === 'state_face_tracking_start') return true
+	if(state === 'state_face_tracking') return true
+	if(state === 'state_face_tracking_start') return true
 	return false
 }
 
@@ -129,14 +129,14 @@ function initExample(){
 				}
 			}
 
-			 // [TODO]: understand what the hell
-			 if(imageDataCtx === null){
+			// [TODO]: understand what the hell
+			if(imageDataCtx === null){
 					console.log('wtf1')
-				 onStreamDimensionsAvailable()
-			 } else {
+				onStreamDimensionsAvailable()
+			} else {
 					console.log('wtf2')
-				 trackFaces()
-			 }
+				trackFaces()
+			}
 		}
 
 		window.navigator.mediaDevices.getUserMedia({video: {width: 640, height: 480, frameRate}})

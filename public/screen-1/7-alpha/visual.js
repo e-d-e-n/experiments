@@ -42,11 +42,11 @@ const applyFacesMatrix = ({faces, factor = options.faces.factor}) => {
 	const translateY = factor / 2
 	const translateX = -translateY * (640 / 480)
 	faces.matrix.set(/*
-		          |            |            |            |*/
-		     scale,           0,           0,  translateX,
-		         0,      -scale,           0,  translateY,
-		         0,           0,           1,           0,
-		         0,           0,           0,           1,
+	            |            |            |            |*/
+	       scale,           0,           0,  translateX,
+	           0,      -scale,           0,  translateY,
+	           0,           0,           1,           0,
+	           0,           0,           0,           1,
 	)
 }
 
@@ -186,7 +186,7 @@ function createGUI({options, camera, faces}){
 }
 
 function animation(enviroment){
-	  // if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
+	// if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
 	// requestAnimationFrame(() => {animation(enviroment)})
 	setTimeout(() => {animation(enviroment)}, 1000/10)
 	if(paused) return
@@ -216,7 +216,7 @@ function animation(enviroment){
 	faces.material.size = pointSize
 	const positions = faces.geometry.attributes.position.array
 	let index3d = 0
-	 posts.children.forEach(post => post.visible = false)
+	posts.children.forEach(post => post.visible = false)
 
 	faceData.forEach(({points, scale, ...props} = {}, index) => {
 		if(!points || points.length !== faceVertexCount) return
@@ -233,20 +233,21 @@ function animation(enviroment){
 		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/5) / 3.5)
 		const translateZ = 0
 		const oScale = (scale/480) * 2
-		post.matrix.set(
-			  oScale,           0,           0,  translateX,
-			       0,      oScale,           0,  translateY,
-			       0,           0,           1,  translateZ,
-			       0,           0,           0,           1,
+		post.matrix.set(/*
+		            |            |            |            |*/
+		      oScale,           0,           0,  translateX,
+		           0,      oScale,           0,  translateY,
+		           0,           0,           1,  translateZ,
+		           0,           0,           0,           1,
 		)
 	})
-	 posts.matrix.set(/*
-	 	          |            |            |            |*/
-	 	    factor,           0,           0,           0,
-	 	         0,      factor,           0,           0,
-	 	         0,           0,           1,   positionZ,
-	 	         0,           0,           0,           1,
-	 )
+	posts.matrix.set(/*
+	            |            |            |            |*/
+	      factor,           0,           0,           0,
+	           0,      factor,           0,           0,
+	           0,           0,           1,   positionZ,
+	           0,           0,           0,           1,
+	)
 
 	// faces.geometry.setDrawRange(0, index3d / 3)
 	faces.geometry.setDrawRange(0, 0)
