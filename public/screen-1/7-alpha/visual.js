@@ -7,11 +7,12 @@ const texture = new THREE.TextureLoader().load('post.png')
 
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
 
+
 const options = {
 	maxFaces: 8,
 	radius: 3,
 	detail: 7,
-	background: new THREE.Color(0xffffff),
+	background: new THREE.Color(0x000000),
 	perlin: {
 		speed: 0.00050,
 		decay: 0.10,
@@ -20,11 +21,12 @@ const options = {
 		huediff: 11.0,
 		point: 1,
 		fragment: true,
-		opacity: 0.05,
+		opacity: 0.01,
 	},
 	faces: {
-		factor: (640 / 480) * 2, // 2.66
-		positionZ: 9.5,
+		// factor: (640 / 480) * 2, // 2.66
+		factor: 2.541752751905165,
+		positionZ: 9.554614733276884,
 		pointSize: 2,
 	},
 }
@@ -123,7 +125,7 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 
 
 const createFaces = ({options}) => {
-	const material = new THREE.PointsMaterial({color: 0x000000, size: 1, sizeAttenuation: false})
+	const material = new THREE.PointsMaterial({color: 0x00aaff, size: 1, sizeAttenuation: false})
 	const positions = new Float32Array(faceVertexCount * 3 * options.maxFaces)
 	const geometry = new THREE.BufferGeometry()
 	geometry.dynamic = true
@@ -153,6 +155,7 @@ function createGUI({options, camera, faces}){
 	document.body.appendChild(stats.dom)
 
 	const gui = new dat.GUI()
+	gui.close()
 
 	const sceneGUI = gui.addFolder('Scene')
 	sceneGUI.addThreeColor(options, 'background').name('Background')
@@ -183,7 +186,9 @@ function createGUI({options, camera, faces}){
 }
 
 function animation(enviroment){
-	if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
+	  // if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
+	// requestAnimationFrame(() => {animation(enviroment)})
+	setTimeout(() => {animation(enviroment)}, 1000/10)
 	if(paused) return
 
 	enviroment.stats && enviroment.stats.begin()
@@ -213,7 +218,7 @@ function animation(enviroment){
 	let index3d = 0
 	 posts.children.forEach(post => post.visible = false)
 
-	faceData.forEach(({points, scale, ...props} = {}, index) => {
+	faceData.forEach(({points, ...props} = {}, index) => {
 		if(!points || points.length !== faceVertexCount) return
 		for(let index2d = 0; index2d < faceVertexCount; index2d += 1){
 			positions[index3d++] = points[index2d].x
@@ -223,35 +228,16 @@ function animation(enviroment){
 		const post = posts.children[index]
 		post.visible = true
 		const {x: postX, y: postY} = points[27]
-		const _scale = (scale / (480/2))
 
-		// const positionArray = [
-		// 	-1 + postX/(640  * +0.5),
-		// 	0.75 + postY/(480  * -0.5),
-		// 	_scale,
-		// 	// -_scale,
-		// ]
-
-		const positionArray = (() => {
-			const scale = (1/480)
-			const translateX = -1 + postX/(640  * +0.5)
-			const translateY = 0.75 + postY/(480  * -0.5)
-
-			return [translateY, translateY, -_scale]
-		})()
-
-		post.position.set(...positionArray)
-		post.rotation.set(0, 0, 0)
-		post.scale.set(1, 1, 1)
-		post.updateMatrix()
-
-
-		 // post.rotation.set(props.rotationX, props.rotationY , props.rotationZ * -1)
-		 post.rotation.set(0, 0 , props.rotationZ * -1)
-		post.updateMatrix()
-
-		post.scale.set(_scale, _scale, 1)
-		post.updateMatrix()
+		const translateX = (-0.5 + (postX/640)) * +1.33
+		const translateY = (-0.5 + (postY/480)) * -1
+		const translateZ = 0
+		post.matrix = new THREE.Matrix4().set(
+			1/factor,    0,           0,           translateX,
+			0,           1/factor,    0,           translateY,
+			0,           0,           1,           translateZ,
+			0,           0,           0,           1,
+		)
 	})
 	 posts.matrix.set(/*
 	 	          |            |            |            |*/
@@ -261,7 +247,8 @@ function animation(enviroment){
 	 	         0,           0,           0,           1,
 	 )
 
-	faces.geometry.setDrawRange(0, index3d / 3)
+	// faces.geometry.setDrawRange(0, index3d / 3)
+	faces.geometry.setDrawRange(0, 0)
 	faces.geometry.attributes.position.needsUpdate = true
 
 	renderer.render(scene, camera)

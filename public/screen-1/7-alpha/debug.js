@@ -1,7 +1,7 @@
 const enviroment = {stats: new Stats()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 let faces = []
-let paused = false
+paused = false
 
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => animate(faces = data))
 
@@ -48,40 +48,49 @@ const animate = () => {
 	for(var i = 0; i < faces.length; i++){
 		var face = faces[i]
 
-		imageDataCtx.fillStyle = '#0af'
-		for(var k = 0; k < face.vertices.length; k += 2){
-			imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
-		}
+		// imageDataCtx.fillStyle = '#0af'
+		// for(var k = 0; k < face.vertices.length; k += 2){
+		// 	imageDataCtx.fillRect(face.vertices[k]-1, face.vertices[k + 1]-1, 2, 2)
+		// }
 
-		imageDataCtx.strokeStyle = '#ff0'
-		imageDataCtx.strokeRect(
-			(face.points[27].x - face.scale / 2) -1,
-			(face.points[27].y - face.scale / 2) -1,
-			face.scale, face.scale,
-		)
+// 		imageDataCtx.strokeStyle = '#660'
+// 		imageDataCtx.strokeRect(
+// 			(face.points[27].x - face.scale / 2) -1,
+// 			(face.points[27].y - face.scale / 2) -1,
+// 			face.scale, face.scale,
+// 		)
+//
+// 		imageDataCtx.strokeStyle = '#060'
+// 		imageDataCtx.strokeRect(
+// 			(face.points[27].x - face.scale / 2) -1,
+// 			(face.points[27].y - face.scale ) -1,
+// 			face.scale, face.scale * 2,
+// 		)
 
 		const faceRect = getFaceRect({...face, ...face.points[27]})
 		imageDataCtx.strokeStyle = '#f0f'
 		imageDataCtx.strokeRect(faceRect.centerX -2.5, faceRect.centerY -2.5, 5, 5)
 
-		imageDataCtx.save()
-		imageDataCtx.strokeStyle = '#ccc'
-		imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
-		imageDataCtx.rotate(faceRect.rotation2d)
-		imageDataCtx.strokeRect(
-			faceRect.originX -1, faceRect.originY -1,
-			faceRect.destX, faceRect.destY,
-		)
-		imageDataCtx.restore()
+		// imageDataCtx.save()
+		// imageDataCtx.strokeStyle = '#ccc'
+		// imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
+		// imageDataCtx.rotate(faceRect.rotation2d)
+		// imageDataCtx.strokeRect(
+		// 	faceRect.originX -1, faceRect.originY -1,
+		// 	faceRect.destX, faceRect.destY,
+		// )
+		// imageDataCtx.restore()
 
 	}
-	debugData.innerHTML = faces.map((face, index) => ([
-		`face ${formatIndex(index)}:`,
-		`| position(${face.points[27].x}, ${face.points[27].y})`,
-		`| scale(${formatFloat(face.scale)})`,
-		`| rotation(${formatFloat(face.rotationX)}, ${formatFloat(face.rotationY)}, ${formatFloat(face.rotationZ)})`,
-		`'`,
-	].join('\n'))).join('\n')
+	if(debugData){
+		debugData.innerHTML = faces.map((face, index) => ([
+			`face ${formatIndex(index)}:`,
+			`| position(${face.points[27].x}, ${face.points[27].y})`,
+			`| scale(${formatFloat(face.scale)})`,
+			`| rotation(${formatFloat(face.rotationX)}, ${formatFloat(face.rotationY)}, ${formatFloat(face.rotationZ)})`,
+			`'`,
+		].join('\n'))).join('\n')
+	}
 	enviroment.stats && enviroment.stats.end()
 }
 
