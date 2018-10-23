@@ -12,7 +12,7 @@ const options = {
 	maxFaces: 8,
 	radius: 3,
 	detail: 7,
-	background: new THREE.Color(0x000000),
+	background: new THREE.Color(0xffffff),
 	perlin: {
 		speed: 0.00050,
 		decay: 0.10,
@@ -21,12 +21,10 @@ const options = {
 		huediff: 11.0,
 		point: 1,
 		fragment: true,
-		opacity: 0.01,
+		opacity: 0.05,
 	},
 	faces: {
-		// magic
-		// factor: 2.541752751905165,
-		// positionZ: 9.554614733276884,
+		draw: true,
 		factor: (640 / 480) * 2, // 2.66
 		positionZ: 9.45,
 		pointSize: 2,
@@ -182,6 +180,7 @@ function createGUI({options, camera, faces}){
 	facesGUI.add(options.faces, 'factor', -10, 10).onChange(factor => applyFacesMatrix({faces, factor}))
 	facesGUI.add(options.faces, 'positionZ', 0, 13)
 	facesGUI.add(options.faces, 'pointSize', 1, 5)
+	facesGUI.add(options.faces, 'draw', true).name('draw points')
 	// facesGUI.open()
 
 	return {stats, gui}
@@ -212,7 +211,6 @@ function animation(enviroment){
 	plasma.material.uniforms.pointSize.value = options.perlin.point
 	plasma.material.uniforms.fragment.value = options.perlin.fragment
 	plasma.material.uniforms.opacity.value = options.perlin.opacity
-
 
 	const {factor, positionZ, pointSize} = options.faces
 	faces.material.size = pointSize
@@ -259,8 +257,7 @@ function animation(enviroment){
 	           0,           0,           0,           1,
 	)
 
-	// faces.geometry.setDrawRange(0, index3d / 3)
-	faces.geometry.setDrawRange(0, 0)
+	faces.geometry.setDrawRange(0, index3d / 3 * options.faces.draw)
 	faces.geometry.attributes.position.needsUpdate = true
 
 	renderer.render(scene, camera)
