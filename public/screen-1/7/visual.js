@@ -231,16 +231,24 @@ function animation(enviroment){
 		post.visible = true
 		const {x: postX, y: postY} = points[27]
 
-		const translateX = (-0.5 + (postX/640)) * +1.33
-		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/5) / 3.5)
+		const translateX = (-0.5 + (postX/640)) * (factor/2)
+		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factor) / 3.5)
 		const translateZ = 0
-		const oScale = (scale/480) * 2
+		const oScale = (scale/480) * 2 * 1.1875
 		post.matrix.set(/*
 		            |            |            |            |*/
 		      oScale,           0,           0,  translateX,
 		           0,      oScale,           0,  translateY,
 		           0,           0,           1,  translateZ,
 		           0,           0,           0,           1,
+		).multiply(
+			new THREE.Matrix4().makeRotationFromEuler(
+				new THREE.Euler(
+					props.rotationX * -1,
+					props.rotationY * +1,
+					props.rotationZ * -1,
+				)
+			)
 		)
 	})
 	posts.matrix.set(/*

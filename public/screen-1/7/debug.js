@@ -74,7 +74,7 @@ const animate = () => {
 		imageDataCtx.save()
 		imageDataCtx.strokeStyle = '#ccc'
 		imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
-		// imageDataCtx.rotate(faceRect.rotation2d)
+		imageDataCtx.rotate(faceRect.rotation2d)
 		imageDataCtx.strokeRect(
 			faceRect.originX -1, faceRect.originY -1,
 			faceRect.destX, faceRect.destY,
