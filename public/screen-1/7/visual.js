@@ -86,7 +86,7 @@ function init({window, document, options, start}){
 }
 
 function createWorld({width, height, domElement}){
-	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 1000)
+	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 32)
 	camera.position.z = 12
 
 	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
@@ -139,7 +139,10 @@ const createFaces = ({options}) => {
 
 	Array(options.maxFaces).fill(0).forEach(() => {
 		const geometry = new THREE.PlaneBufferGeometry(0.5, 1)
-		const material = new THREE.MeshBasicMaterial({map: texture, transparent: true})
+		const material = new THREE.MeshBasicMaterial({
+			map: texture, transparent: true,
+			depthWrite: false, depthTest: false,
+		})
 		const mesh = new THREE.Mesh(geometry, material)
 		mesh.matrixAutoUpdate = false
 		posts.add(mesh)
@@ -229,10 +232,10 @@ function animation(enviroment){
 		post.visible = true
 		const {x: postX, y: postY} = points[27]
 
+		const oScale = (scale/480) * 2 * 1.1875
 		const translateX = (-0.5 + (postX/640)) * (factor/2)
 		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factor) / 3.5)
-		const translateZ = 0
-		const oScale = (scale/480) * 2 * 1.1875
+		const translateZ = oScale / 1000 // negligible ammount used for z-ordering
 		post.matrix.set(/*
 		            |            |            |            |*/
 		      oScale,           0,           0,  translateX,
