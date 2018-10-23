@@ -24,7 +24,7 @@ const options = {
 		opacity: 0.05,
 	},
 	faces: {
-		draw: true,
+		draw: false,
 		factor: (640 / 480) * 2, // 2.66
 		positionZ: 9.45,
 		pointSize: 2,
@@ -77,7 +77,7 @@ function init({window, document, options, start}){
 	scene.add(posts)
 	scene.add(faces)
 
-	const {stats} = createGUI({camera, faces, options})
+	const {stats} = createGUI({camera, faces, options, renderer})
 	animation({scene, plasma, camera, renderer, options, start, stats, faces, posts})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
@@ -153,11 +153,13 @@ const createFaces = ({options}) => {
 }
 
 
-function createGUI({options, camera, faces}){
+function createGUI({options, camera, faces, renderer}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
+	window._enterFullScreen = () => screenfull.request(renderer.domElement)
 
 	const gui = new dat.GUI()
+	gui.add(window, '_enterFullScreen').name('fullscreen')
 	gui.close()
 
 	const sceneGUI = gui.addFolder('Scene')
