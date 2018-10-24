@@ -1,7 +1,8 @@
 let paused = false
 let faceData = []
 
-const texture = new THREE.TextureLoader().load('post.png')
+const loadingTexture = new THREE.TextureLoader().load('loading.png')
+const postTexture = new THREE.TextureLoader().load('post.png')
 
 
 !((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
@@ -137,7 +138,7 @@ const createPosts = ({options}) => {
 	Array(options.maxFaces).fill(0).forEach(() => {
 		const geometry = new THREE.PlaneBufferGeometry(0.5, 1)
 		const material = new THREE.MeshBasicMaterial({
-			map: texture, transparent: true,
+			map: loadingTexture, transparent: true,
 			depthWrite: false, depthTest: false,
 		})
 		const mesh = new THREE.Mesh(geometry, material)
@@ -236,6 +237,8 @@ function animation(enviroment){
 	faceData.forEach(({scale, ...props} = {}, index) => {
 		if(typeof props.x !== 'number' || typeof props.y !== 'number') return
 		const post = posts.children[index]
+		post.material.map = props.loading ? loadingTexture : postTexture
+		post.material.map.needsUpdate = true
 		post.visible = true
 		const {x: postX, y: postY} = props
 
