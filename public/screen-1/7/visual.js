@@ -12,6 +12,8 @@ const options = {
 	maxFaces: 8,
 	radius: 3,
 	detail: 7,
+	fps: 10,
+	raf: true,
 	background: new THREE.Color(0xffffff),
 	perlin: {
 		speed: 0.00050,
@@ -23,9 +25,30 @@ const options = {
 		fragment: true,
 		opacity: 0.05,
 	},
+	plasma: {
+		scale2d: 1,
+		translateX: 0,
+		translateY: 0,
+		translateZ: 0,
+	},
+	factors: {
+		waves: {
+			faceBegin: 0.5,
+			faceKnown: 1,
+		},
+		waves: {
+			faceBegin: 0.5,
+			faceKnown: 1,
+		},
+		FacesToWaves: 1,
+		knownFacesToWaves: 1,
+
+	},
 	faces: {
 		draw: false,
 		factor: (640 / 480) * 2, // 2.66
+		translateX: 0,
+		translateY: 0,
 		positionZ: 9.45,
 		pointSize: 2,
 	},
@@ -86,7 +109,7 @@ function init({window, document, options, start}){
 }
 
 function createWorld({width, height, domElement}){
-	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 32)
+	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 64)
 	camera.position.z = 12
 
 	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
@@ -119,6 +142,7 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 
 	const geo = new THREE.IcosahedronBufferGeometry(options.radius,options.detail)
 	const plasma = new THREE.Points(geo, material)
+	plasma.matrixAutoUpdate = false
 
 	return {plasma}
 }
@@ -159,21 +183,30 @@ function createGUI({options, camera, faces, renderer}){
 	window._enterFullScreen = () => screenfull.request(renderer.domElement)
 
 	const gui = new dat.GUI()
-	gui.add(window, '_enterFullScreen').name('fullscreen')
+	gui.add(window, '_enterFullScreen').name('enter fullscreen')
+	gui.add(options, 'fps', 0, 60, 1).name('fps')
+	gui.add(options, 'raf').name('animationFrame')
 	gui.close()
 
-	const sceneGUI = gui.addFolder('Scene')
+	const sceneGUI = gui.addFolder('Scene Options')
 	sceneGUI.addThreeColor(options, 'background').name('Background')
 	// sceneGUI.open()
 
-	const camGUI = gui.addFolder('Camera')
+	const camGUI = gui.addFolder('Camera Options')
 	camGUI.add(camera.position, 'z', 1, 20).name('Distance')
 	// camGUI.open()
+
+	const plasmaGUI = gui.addFolder('Plasma Options')
+	plasmaGUI.add(options.plasma, 'scale2d', 0.25, 5)
+	plasmaGUI.add(options.plasma, 'translateX', -12, 12)
+	plasmaGUI.add(options.plasma, 'translateY', -12, 12)
+	plasmaGUI.add(options.plasma, 'translateZ', -24, 24)
+	// plasmaGUI.open()
 
 	const perlinGUI = gui.addFolder('Shader Options')
 	perlinGUI.add(options.perlin, 'speed', 0.00000, 0.00050).name('Speed')
 	perlinGUI.add(options.perlin, 'decay', 0.0, 1.00).name('Decay')
-	perlinGUI.add(options.perlin, 'waves', 0.0, 20.00).name('Waves')
+	perlinGUI.add(options.perlin, 'waves', 0, 60).name('Waves')
 	perlinGUI.add(options.perlin, 'point', 1, 2).name('Point Size')
 	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
 	perlinGUI.add(options.perlin, 'complexity', 0.1, 1.00).name('Complexity')
@@ -181,8 +214,10 @@ function createGUI({options, camera, faces, renderer}){
 	perlinGUI.add(options.perlin, 'opacity', 0.0, 1.0).name('Opacity')
 	// perlinGUI.open()
 
-	const facesGUI = gui.addFolder('Faces options')
+	const facesGUI = gui.addFolder('Faces Options')
 	facesGUI.add(options.faces, 'factor', -10, 10).onChange(factor => applyFacesMatrix({faces, factor}))
+	facesGUI.add(options.faces, 'translateX', -12, 12)
+	facesGUI.add(options.faces, 'translateY', -12, 12)
 	facesGUI.add(options.faces, 'positionZ', 0, 13)
 	facesGUI.add(options.faces, 'pointSize', 1, 5)
 	facesGUI.add(options.faces, 'draw', true).name('draw points')
@@ -192,9 +227,9 @@ function createGUI({options, camera, faces, renderer}){
 }
 
 function animation(enviroment){
-	// if(!faceData.length) requestAnimationFrame(() => {animation(enviroment)})
-	// requestAnimationFrame(() => {animation(enviroment)})
-	setTimeout(() => {animation(enviroment)}, 1000/10)
+	const loopFn = enviroment.options.raf ? requestAnimationFrame : setTimeout
+	loopFn(() => animation(enviroment), 1000 / enviroment.options.fps)
+	// if(!faceData.length) loopFn(() => {animation(enviroment)})
 	if(paused) return
 
 	enviroment.stats && enviroment.stats.begin()
@@ -216,6 +251,12 @@ function animation(enviroment){
 	plasma.material.uniforms.pointSize.value = options.perlin.point
 	plasma.material.uniforms.fragment.value = options.perlin.fragment
 	plasma.material.uniforms.opacity.value = options.perlin.opacity
+	plasma.matrix.set(
+		options.plasma.scale2d, 0, 0, options.plasma.translateX,
+		0, options.plasma.scale2d, 0, options.plasma.translateY * -1,
+		0, 0, 1, options.plasma.translateZ,
+		0,0,0,1,
+	)
 
 	const {factor, positionZ, pointSize} = options.faces
 	faces.material.size = pointSize
@@ -238,8 +279,7 @@ function animation(enviroment){
 		const translateX = (-0.5 + (postX/640)) * (factor/2)
 		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factor) / 3.5)
 		const translateZ = oScale / 1000 // negligible ammount used for z-ordering
-		post.matrix.set(/*
-		            |            |            |            |*/
+		post.matrix.set(
 		      oScale,           0,           0,  translateX,
 		           0,      oScale,           0,  translateY,
 		           0,           0,           1,  translateZ,
@@ -254,10 +294,9 @@ function animation(enviroment){
 			)
 		)
 	})
-	posts.matrix.set(/*
-	            |            |            |            |*/
-	      factor,           0,           0,           0,
-	           0,      factor,           0,           0,
+	posts.matrix.set(
+	      factor,           0,           0,   options.faces.translateX / (factor * -2),
+	           0,      factor,           0,   options.faces.translateY / (factor * -2),
 	           0,           0,           1,   positionZ,
 	           0,           0,           0,           1,
 	)
