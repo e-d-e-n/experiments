@@ -1,7 +1,15 @@
 let paused = true
-let frames = []
+let frames = (() => {
+	try{
+		return JSON.parse(localStorage.getItem(`${location.pathname}:frames`))
+	}catch(e){
+		localStorage.removeItem(`${location.pathname}:frames`)
+		return []
+	}
+})()
+
 let index = 0
-const options = {fps: 30, raf: false}
+const options = {fps: 10, raf: false}
 const status = document.querySelector('#status')
 const body = document.body
 const channel = new BroadcastChannel('brfv4-faces')
@@ -31,11 +39,13 @@ const publish = faces => {
 
 const play = () => {
 	paused = false
+	localStorage.setItem(`${location.pathname}:paused`, 'false')
 	status.innerHTML = 'playing'
 }
 
 const pause = () => {
 	paused = true
+	localStorage.setItem(`${location.pathname}:paused`, 'true')
 	status.innerHTML = 'paused'
 }
 
@@ -49,6 +59,7 @@ body.addEventListener('drop', event => {
 	reader.onloadend = function(){
 		try{
 			frames = JSON.parse(this.result)
+			localStorage.setItem(`${location.pathname}:frames`, this.result)
 			index = 0
 			play()
 		}catch(e){
@@ -66,5 +77,5 @@ const animate = () => {
 	index = (index + 1) % frames.length
 	publish(frames[index])
 }
-
+if(localStorage.getItem(`${location.pathname}:paused`) === 'false') play()
 animate()
