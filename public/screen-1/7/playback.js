@@ -22,8 +22,11 @@ const enviroment = {gui: new dat.GUI()}
 })(enviroment)
 
 const decompressFace = data => ({
+	x: (data.vertices || [])[54],
+	y: (data.vertices || [])[55],
+	loading: data.state === 'state_face_tracking_start',
 	...data,
-	points: data.vertices.reduce((result, value, index) => {
+	points: (data.vertices || []).reduce((result, value, index) => {
 		if(index % 2){
 			result[result.length - 1].y = value
 		}else{

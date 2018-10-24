@@ -37,6 +37,9 @@ const pickFace = face => ({
 	rotationX: face.rotationX,
 	rotationY: face.rotationY,
 	rotationZ: face.rotationZ,
+	x: face.vertices[54],
+	y: face.vertices[55],
+	loading: face.state === 'state_face_tracking_start',
 })
 
 const publish = faces => {
