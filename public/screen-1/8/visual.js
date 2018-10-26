@@ -37,9 +37,6 @@ const options = {
 			faceBegin: 0.5,
 			faceKnown: 1,
 		},
-		FacesToWaves: 1,
-		knownFacesToWaves: 1,
-
 	},
 	posts: {
 		factor: (640 / 480) * 2, // 2.66
