@@ -20,6 +20,7 @@ const options = {
 		decay: 0.10,
 		complexity: 0.30,
 		waves: 20.0,
+		saturation: 1,
 		huediff: 11.0,
 		point: 1,
 		fragment: true,
@@ -32,10 +33,6 @@ const options = {
 		translateZ: 0,
 	},
 	factors: {
-		waves: {
-			faceBegin: 0.5,
-			faceKnown: 1,
-		},
 		waves: {
 			faceBegin: 0.5,
 			faceKnown: 1,
@@ -118,6 +115,7 @@ const createPlasma = ({options, vertexShader, fragmentShader}) => {
 			complexity: {type: 'f', value: 0.0},
 			waves: {type: 'f', value: 0.0},
 			huediff: {type: 'f', value: 0.0},
+			saturation: {type: 'f', value: 1.0},
 			pointSize: {type: 'f', value: 0.0},
 			fragment: {type: 'i', value: true},
 			opacity: {type: 'f', value: 0.01},
@@ -185,6 +183,7 @@ function createGUI({options, camera, renderer}){
 	perlinGUI.add(options.perlin, 'fragment', true).name('Fragment')
 	perlinGUI.add(options.perlin, 'complexity', 0.1, 1.00).name('Complexity')
 	perlinGUI.add(options.perlin, 'huediff', 0.0, 15.0).name('Hue')
+	perlinGUI.add(options.perlin, 'saturation', 0.0, 1.0).name('Saturation')
 	perlinGUI.add(options.perlin, 'opacity', 0.0, 1.0).name('Opacity')
 	// perlinGUI.open()
 
@@ -220,6 +219,7 @@ function animation(enviroment){
 	plasma.material.uniforms.complexity.value = options.perlin.complexity
 	plasma.material.uniforms.waves.value = options.perlin.waves
 	plasma.material.uniforms.huediff.value = options.perlin.huediff
+	plasma.material.uniforms.saturation.value = options.perlin.saturation
 	plasma.material.uniforms.pointSize.value = options.perlin.point
 	plasma.material.uniforms.fragment.value = options.perlin.fragment
 	plasma.material.uniforms.opacity.value = options.perlin.opacity
