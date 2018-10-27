@@ -3,21 +3,21 @@ const enviroment = {stats: new Stats(), gui: new dat.GUI()}
 enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 
 const options = {
-	faces: 5,
+	faces: 4,
 	frameRate: 10,
 	stepSize: 12,
 	minMergeNeighbors: 8,
 	debug: false,
 	start: {
 		minWidth: 48,
-		maxWidth: 480,
+		maxWidth: 240,
 		rotationX: 32,
 		rotationY: 40,
 		rotationZ: 40,
 	},
 	reset: {
-		minWidth: 72,
-		maxWidth: 480,
+		minWidth: 48,
+		maxWidth: 240,
 		rotationX: 40,
 		rotationY: 55,
 		rotationZ: 55,
