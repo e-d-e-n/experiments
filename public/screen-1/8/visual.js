@@ -14,6 +14,7 @@ const options = {
 	detail: 7,
 	fps: 10,
 	raf: true,
+	dynamic: true,
 	background: new THREE.Color(0xffffff),
 	perlin: {
 		speed: 0.00050,
@@ -33,10 +34,8 @@ const options = {
 		translateZ: 0,
 	},
 	factors: {
-		waves: {
-			faceBegin: 0.5,
-			faceKnown: 1,
-		},
+		waves:      {base: 5, loadingFaces:   6, knownFaces:  14, totalFaces: 0.0},
+		saturation: {base: 0, loadingFaces: 0.2, knownFaces: 0.4, totalFaces: 0.0},
 	},
 	posts: {
 		factor: (640 / 480) * 2, // 2.66
@@ -155,7 +154,8 @@ function createGUI({options, camera, renderer}){
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
 	gui.add(options, 'fps', 0, 60, 1).name('fps')
 	gui.add(options, 'raf').name('animationFrame')
-	gui.close()
+	gui.add(options, 'dynamic')
+	// gui.close()
 
 	const sceneGUI = gui.addFolder('Scene Options')
 	sceneGUI.addThreeColor(options, 'background').name('Background')
@@ -194,6 +194,19 @@ function createGUI({options, camera, renderer}){
 	return {stats, gui}
 }
 
+const countFaces = faces => faces.reduce(
+	([a, b], {loading}) => ([a + !!loading, b + !loading, faces.length]),
+	[0, 0, 0],
+)
+
+const getFactored = (
+	{loadingFaces: lFactor, knownFaces: kFactor, totalFaces: tFactor, base = 0},
+	{loadingFaces: lAmount, knownFaces: kAmount, totalFaces: tAmount},
+) => (lFactor * lAmount) + (kFactor * kAmount) + (tFactor * tAmount) + base
+
+const getWaves = amounts => getFactored(options.factors.waves, amounts)
+const getSaturation = amounts => getFactored(options.factors.saturation, amounts)
+
 function animation(enviroment){
 	const loopFn = enviroment.options.raf ? requestAnimationFrame : setTimeout
 	loopFn(() => animation(enviroment), 1000 / enviroment.options.fps)
@@ -208,15 +221,18 @@ function animation(enviroment){
 	} = enviroment
 
 	const now = Date.now()
+	const [loadingFaces, knownFaces, totalFaces] = countFaces(faceData)
+	const amounts = {loadingFaces, knownFaces, totalFaces}
+	console.log(amounts, {saturation: getSaturation(amounts), waves: getWaves(amounts)})
 
 	scene.background = options.background
 
 	plasma.material.uniforms.time.value = options.perlin.speed * (now - start)
 	plasma.material.uniforms.decay.value = options.perlin.decay
 	plasma.material.uniforms.complexity.value = options.perlin.complexity
-	plasma.material.uniforms.waves.value = options.perlin.waves
+	plasma.material.uniforms.waves.value = options.dynamic ? getWaves(amounts) : options.perlin.waves
 	plasma.material.uniforms.huediff.value = options.perlin.huediff
-	plasma.material.uniforms.saturation.value = options.perlin.saturation
+	plasma.material.uniforms.saturation.value = options.dynamic ? getSaturation(amounts) : options.perlin.saturation
 	plasma.material.uniforms.pointSize.value = options.perlin.point
 	plasma.material.uniforms.fragment.value = options.perlin.fragment
 	plasma.material.uniforms.opacity.value = options.perlin.opacity
