@@ -34,8 +34,9 @@ const options = {
 		translateZ: 0,
 	},
 	factors: {
-		waves:      {base: 5, loadingFaces:   6, knownFaces:  14, totalFaces: 0.0},
-		saturation: {base: 0, loadingFaces: 0.2, knownFaces: 0.4, totalFaces: 0.0},
+		scale2d:    {base: .8, loadingFaces: .03, knownFaces: .08, totalFaces: 0.0},
+		waves:      {base:  5, loadingFaces:   6, knownFaces:  14, totalFaces: 0.0},
+		saturation: {base:  0, loadingFaces: 0.2, knownFaces: 0.4, totalFaces: 0.0},
 	},
 	posts: {
 		factor: (640 / 480) * 2, // 2.66
@@ -204,6 +205,7 @@ const getFactored = (
 	{loadingFaces: lAmount, knownFaces: kAmount, totalFaces: tAmount},
 ) => (lFactor * lAmount) + (kFactor * kAmount) + (tFactor * tAmount) + base
 
+const getScale = amounts => getFactored(options.factors.scale2d, amounts)
 const getWaves = amounts => getFactored(options.factors.waves, amounts)
 const getSaturation = amounts => getFactored(options.factors.saturation, amounts)
 
@@ -236,9 +238,11 @@ function animation(enviroment){
 	plasma.material.uniforms.pointSize.value = options.perlin.point
 	plasma.material.uniforms.fragment.value = options.perlin.fragment
 	plasma.material.uniforms.opacity.value = options.perlin.opacity
+
+	const plasmaScale = options.dynamic ? getScale(amounts) : options.plasma.scale2d
 	plasma.matrix.set(
-		options.plasma.scale2d, 0, 0, options.plasma.translateX,
-		0, options.plasma.scale2d, 0, options.plasma.translateY * -1,
+		plasmaScale, 0, 0, options.plasma.translateX,
+		0, plasmaScale, 0, options.plasma.translateY * -1,
 		0, 0, 1, options.plasma.translateZ,
 		0,0,0,1,
 	)
