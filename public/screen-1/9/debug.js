@@ -110,16 +110,16 @@ const animate = () => {
 		imageDataCtx.strokeStyle = '#f0f'
 		imageDataCtx.strokeRect(face.x -2.5, face.y -2.5, 5, 5)
 
-
-		// imageDataCtx.save()
-		// imageDataCtx.strokeStyle = '#333'
-		// imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
-		// imageDataCtx.rotate(faceRect.rotation2d)
-		// imageDataCtx.strokeRect(
-		// 	faceRect.originX -1, faceRect.originY -1,
-		// 	faceRect.destX, faceRect.destY,
-		// )
-		// imageDataCtx.restore()
+		const faceRect = getFaceRect({...face})
+		imageDataCtx.save()
+		imageDataCtx.strokeStyle = '#333'
+		imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
+		imageDataCtx.rotate(faceRect.rotation2d)
+		imageDataCtx.strokeRect(
+			faceRect.originX -1, faceRect.originY -1,
+			faceRect.destX, faceRect.destY,
+		)
+		imageDataCtx.restore()
 	}
 	if(debugData){
 		debugData.innerHTML = [
