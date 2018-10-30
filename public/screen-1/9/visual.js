@@ -229,7 +229,6 @@ function animation(enviroment){
 	const now = Date.now()
 	const [loadingFaces, knownFaces, totalFaces] = countFaces(faceData)
 	const amounts = {loadingFaces, knownFaces, totalFaces}
-	console.log(amounts, {saturation: getSaturation(amounts), waves: getWaves(amounts)})
 
 	scene.background = options.background
 
