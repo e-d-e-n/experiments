@@ -2,7 +2,10 @@ let paused         = false
 let resolution     = null
 const enviroment   = {stats: new Stats(), gui: new dat.GUI()}
 const $webcam      = document.getElementById('_webcam')
-const faceDetector = new FaceDetector({fastMode: false, maxDetectedFaces: 1})
+const MAX_DISTANCE = 64
+const MAX_FACES    = 6
+const CACHE_DEPTH  = 7
+const faceDetector = new FaceDetector({fastMode: true, maxDetectedFaces: MAX_FACES})
 
 class CacheStack {
 	constructor(limit = 12){
@@ -43,13 +46,14 @@ const getKeysOrderedByValue = object => (
 )
 
 class TrackedFacesList {
-	constructor(maxLength = 20, limit = 12){
-		this._reset(maxLength, limit)
+	constructor(maxLength = 20, maxDistance = 32, limit = 12){
+		this._reset(maxLength, maxDistance, limit)
 	}
-	_reset(maxLength, limit){
+	_reset(maxLength, maxDistance, limit){
 		this.maxLength = maxLength
-		this.length = 0
+		this.maxDistance = maxDistance
 		this.limit = limit
+		this.length = 0
 		this.data = {}
 		this.access = {}
 	}
@@ -81,11 +85,10 @@ class TrackedFacesList {
 		while(this.length > maxLength) this._removeFace(LRU.shift())
 	}
 	updateWith(rawFaces = []){
-		if(rawFaces.length === 0) return this._reset(this.maxLength, this.limit)
+		if(rawFaces.length === 0) return this._reset(this.maxLength, this.maxDistance, this.limit)
 		const entries = Object.entries(this.data)
 		const oldDoneSet = new Set()
 		const newDoneSet = new Set()
-		const maxDistance = 64
 		const newFaces = rawFaces.map(pickFace)
 
 		const distances = newFaces
@@ -105,7 +108,7 @@ class TrackedFacesList {
 
 				if(oldDone && newDone) return
 
-				if(distance < maxDistance && !newDone && !oldDone){
+				if(distance < this.maxDistance && !newDone && !oldDone){
 					this._pushToFace(key, newFace)
 					oldDoneSet.add(key)
 					newDoneSet.add(newFace)
@@ -165,11 +168,10 @@ const pickFace = ({boundingBox, landmarks}) => addRotationZ({
 	y: (boundingBox.y + (boundingBox.height / 2)) * 0.88,
 }, {boundingBox, landmarks})
 
-const cache = new TrackedFacesList(12, 6)
+const cache = new TrackedFacesList(MAX_FACES, MAX_DISTANCE, CACHE_DEPTH)
 const publish = rawFaces => {
 	cache.updateWith(rawFaces)
-	const message = cache.values()
-	channel.postMessage(message)
+	channel.postMessage(cache.values())
 }
 
 const dimensionsAvailableCb = ($element) => async callback => {
