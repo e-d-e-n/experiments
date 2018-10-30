@@ -196,7 +196,11 @@ function createGUI({options, camera, renderer}){
 }
 
 const countFaces = faces => faces.reduce(
-	([a, b], {loading}) => ([a + !!loading, b + !loading, faces.length]),
+	([loadingFaces, knownFaces], {loading, progress = 1}) => ([
+		loadingFaces + (!!loading * progress),
+		knownFaces + !loading,
+		faces.length,
+	]),
 	[0, 0, 0],
 )
 

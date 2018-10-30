@@ -171,7 +171,9 @@ const pickFace = ({boundingBox, landmarks}) => addRotationZ({
 const cache = new TrackedFacesList(MAX_FACES, MAX_DISTANCE, CACHE_DEPTH)
 const publish = rawFaces => {
 	cache.updateWith(rawFaces)
-	channel.postMessage(cache.values())
+	// some buggy code ends up throwing invalid values, needs to filter them.
+	const message = cache.values().filter(a => typeof a.loading === 'boolean')
+	channel.postMessage(message)
 }
 
 const dimensionsAvailableCb = ($element) => async callback => {
