@@ -33,8 +33,8 @@ const smoosh = (cacheDepth = 1) => face => {
 		keys.forEach(key => {
 			acc[key] = (acc[key] * index + object[key]) / (index + 1)
 		})
-
 		acc.loading = cacheDepth !== values.length
+		acc.progress = values.length / cacheDepth
 		return acc
 	}, {})
 }

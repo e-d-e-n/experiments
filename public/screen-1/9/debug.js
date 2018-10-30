@@ -111,16 +111,15 @@ const animate = () => {
 		imageDataCtx.strokeRect(face.x -2.5, face.y -2.5, 5, 5)
 
 		const faceRect = getFaceRect({...face})
+		const {progress = 0} = face
 		imageDataCtx.save()
 		imageDataCtx.translate(faceRect.centerX, faceRect.centerY)
 		imageDataCtx.rotate(faceRect.rotation2d)
-		if(face.loading === false){
-			imageDataCtx.fillStyle = 'rgba(255, 0, 0, 0.25)'
-			imageDataCtx.fillRect(
-				faceRect.originX -1, faceRect.originY -1,
-				faceRect.destX, faceRect.destY,
-			)
-		}
+		imageDataCtx.fillStyle = `rgba(255, 0, 0, ${0.25 * progress})`
+		imageDataCtx.fillRect(
+			faceRect.originX -1, faceRect.originY -1,
+			faceRect.destX, faceRect.destY,
+		)
 		imageDataCtx.strokeStyle = '#333'
 		imageDataCtx.strokeRect(
 			faceRect.originX -1, faceRect.originY -1,
