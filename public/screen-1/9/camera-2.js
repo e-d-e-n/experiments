@@ -23,15 +23,17 @@ class CacheStack {
 
 const smoosh = (cacheDepth = 1) => face => {
 	const values = face.values()
-	const keys = Object.keys(values[0] || {})
+	const keys = Object.keys(values[0])
 	return values.reduce((acc, object, index) => {
 		if(!index) return object
-		for(key in keys){
-			if(key === 'loading') continue
+
+		keys.forEach(key => {
 			acc[key] = (acc[key] * index + object[key]) / (index + 1)
-		}
+		})
+
+		acc.loading = cacheDepth !== values.length
 		return acc
-	}, {loading: values.length !== cacheDepth})
+	}, {})
 }
 
 const ascendingValues = ([key1, value1], [key2, value2]) => value1 - value2
@@ -42,11 +44,9 @@ const getKeysOrderedByValue = object => (
 
 class TrackedFacesList {
 	constructor(maxLength = 20, limit = 12){
-		console.log('constructor')
 		this._reset(maxLength, limit)
 	}
 	_reset(maxLength, limit){
-		console.log('_reset')
 		this.maxLength = maxLength
 		this.length = 0
 		this.limit = limit
@@ -54,17 +54,15 @@ class TrackedFacesList {
 		this.access = {}
 	}
 	_removeFace(key){
-		console.log('_removeFace')
 		this.length -= 1
 		delete this.data[key]
 		delete this.access[key]
 	}
-	_saveNewFace(face){
-		console.log('_saveNewFace')
+	_saveNewFace(newFace){
 		const now = Date.now()
 		const key = `${now}§${Math.random()}`
 		const stack = new CacheStack(this.limit)
-		stack.push(pickFace(face))
+		stack.push(newFace)
 
 		this.length += 1
 		this.data[key] = stack
@@ -73,37 +71,33 @@ class TrackedFacesList {
 		this._resize()
 	}
 	_pushToFace(key, face){
-		console.log('_pushToFace')
 		this.data[key].push(face)
 		this.access[key] = Date.now()
 	}
 	_resize(maxLength = this.maxLength){
-		console.log('_resize')
 		this.maxLength = maxLength
 		if(maxLength > this.length) return
 		const LRU = getKeysOrderedByValue(this.access)
 		while(this.length > maxLength) this._removeFace(LRU.shift())
 	}
-	updateWith(newValues = []){
-		console.log('updateWith', newValues)
-		if(newValues.length === 0) return this._reset(this.maxLength, this.limit)
+	updateWith(rawFaces = []){
+		if(rawFaces.length === 0) return this._reset(this.maxLength, this.limit)
 		const entries = Object.entries(this.data)
 		const oldDoneSet = new Set()
 		const newDoneSet = new Set()
 		const maxDistance = 64
+		const newFaces = rawFaces.map(pickFace)
 
-		const distances = newValues
-			.reduce((allDistances, rawFace) => {
-					const newFace = pickFace(rawFace)
+		const distances = newFaces
+			.reduce((allDistances, newFace) => {
 					const thisFaceDistances = entries.map(([key, value]) => {
 						return [key, newFace, getDistance(value.getLast(), newFace)]
 					})
-					return [...allDistances, ...thisFaceDistances]
+					return allDistances.concat(thisFaceDistances)
 				},
 				[],
 			)
 			.sort((a, b) => a[2] - b[2])
-		console.log('distances:', distances)
 		distances
 			.forEach(([key, newFace, distance]) => {
 				const oldDone = oldDoneSet.has(key)
@@ -111,7 +105,7 @@ class TrackedFacesList {
 
 				if(oldDone && newDone) return
 
-				if(distance < maxDistance){
+				if(distance < maxDistance && !newDone && !oldDone){
 					this._pushToFace(key, newFace)
 					oldDoneSet.add(key)
 					newDoneSet.add(newFace)
@@ -128,7 +122,8 @@ class TrackedFacesList {
 					newDoneSet.add(newFace)
 				}
 			})
-		newValues.forEach(newFace => {
+
+		newFaces.forEach(newFace => {
 			if(newDoneSet.has(newFace)) return
 			this._saveNewFace(newFace)
 			newDoneSet.add(newFace)
@@ -170,11 +165,10 @@ const pickFace = ({boundingBox, landmarks}) => addRotationZ({
 	y: (boundingBox.y + (boundingBox.height / 2)) * 0.88,
 }, {boundingBox, landmarks})
 
-const cache = new TrackedFacesList()
-const publish = newFaces => {
-	cache.updateWith(newFaces)
+const cache = new TrackedFacesList(12, 6)
+const publish = rawFaces => {
+	cache.updateWith(rawFaces)
 	const message = cache.values()
-	console.log('output:', message)
 	channel.postMessage(message)
 }
 

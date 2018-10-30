@@ -5,7 +5,7 @@ const loadingTexture = new THREE.TextureLoader().load('loading.png')
 const postTexture = new THREE.TextureLoader().load('post.png')
 
 
-!((new BroadcastChannel('brfv4-faces')).onmessage = ({data}) => {faceData = data})
+!((new BroadcastChannel('frame-faces')).onmessage = ({data}) => {faceData = data})
 
 
 const options = {
