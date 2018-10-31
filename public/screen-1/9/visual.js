@@ -51,7 +51,7 @@ const postTextureLoader = new RandomTextureLoader(POSTS_FOLDER, POSTS_RANGE, POS
 const options = {
 	maxFaces: 8,
 	radius: 3,
-	detail: 7,
+	detail: 6,
 	fps: 10,
 	raf: true,
 	dynamic: true,
@@ -64,9 +64,9 @@ const options = {
 		waves: 20.0,
 		saturation: 1,
 		huediff: 11.0,
-		point: 1,
+		point: 1.5,
 		fragment: true,
-		opacity: 0.05,
+		opacity: 0.066,
 	},
 	plasma: {
 		scale2d: 1,
