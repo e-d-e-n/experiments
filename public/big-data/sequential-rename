@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+find "$(dirname "$0")" -type d -mindepth 1 -maxdepth 1 | \
+	while read folder; do
+		find "$folder" -type f -name '*.png' -size 0 -delete
+		find "$folder" -type f -name '*.png' | cat -n | \
+			while read number filename; do mv "$filename" "$folder/$number.png"; done
+	done
