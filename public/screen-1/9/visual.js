@@ -1,8 +1,48 @@
+const POSTS_FOLDER = '/big-data/posts'
+const POSTS_RANGE = 600
+const POSTS_DELAY = 750
+
 let paused = false
 let faceData = []
 
 const loadingTexture = new THREE.TextureLoader().load('loading.png')
-const postTexture = new THREE.TextureLoader().load('post.png')
+
+class RandomTextureLoader {
+	constructor(folder, range, delay){
+		if(typeof folder !== 'string') throw new Error('folder must be a string')
+		if(typeof range !== 'number') throw new Error('range must be a number')
+		if(typeof delay !== 'number') throw new Error('delay must be a number')
+		this.range = range
+		this.delay = delay
+		this.folder = folder
+		this.doneTextures = []
+		this.loaderTimers = []
+		this.imageLoaders = []
+	}
+	load(index){
+		const now = Date.now()
+		const tex = this.doneTextures[index] || loadingTexture
+		if(now - this.loaderTimers[index] < this.delay) return tex
+
+		this.loaderTimers[index] = now
+		this.imageLoaders[index] = (
+			this.imageLoaders[index] || new THREE.TextureLoader()
+		)
+
+		const number = Math.floor(Math.random() * (this.range - 1)) + 1
+		const pngUrl = `${this.folder}/${number}.tex.png`
+		this.imageLoaders[index].load(pngUrl, tex => {
+			this.doneTextures[index] = tex
+		})
+
+		return tex
+	}
+	getTexture(index, loading){
+		return loading ? loadingTexture : this.load(index)
+	}
+}
+
+const postTextureLoader = new RandomTextureLoader(POSTS_FOLDER, POSTS_RANGE, POSTS_DELAY)
 
 
 !((new BroadcastChannel('frame-faces')).onmessage = ({data}) => {faceData = data})
@@ -261,7 +301,7 @@ function animation(enviroment){
 	faceData.forEach(({scale, ...props} = {}, index) => {
 		if(typeof props.x !== 'number' || typeof props.y !== 'number') return
 		const post = posts.children[index]
-		post.material.map = props.loading ? loadingTexture : postTexture
+		post.material.map = postTextureLoader.getTexture(index, props.loading)
 		post.material.map.needsUpdate = true
 		post.visible = true
 		const {x: postX, y: postY} = props
