@@ -16,6 +16,7 @@ const options = {
 	raf: true,
 	dynamic: true,
 	background: new THREE.Color(0xffffff),
+	pixelRatio: 1,
 	perlin: {
 		speed: 0.00050,
 		decay: 0.10,
@@ -154,6 +155,9 @@ function createGUI({options, camera, renderer}){
 	const gui = new dat.GUI()
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
 	gui.add(options, 'fps', 0, 60, 1).name('fps')
+	gui.add(options, 'pixelRatio', 1, 2, 1).onChange(value => {
+		renderer.setPixelRatio(value)
+	})
 	gui.add(options, 'raf').name('animationFrame')
 	gui.add(options, 'dynamic')
 	// gui.close()
