@@ -1,5 +1,4 @@
 let resolution     = null
-const enviroment   = {stats: new Stats(), gui: new dat.GUI()}
 const $webcam      = document.getElementById('webcam')
 const MAX_DISTANCE = 64
 const MAX_FACES    = 6
@@ -136,7 +135,6 @@ class TrackedFacesList {
 	}
 }
 
-enviroment.stats && document.body.appendChild(enviroment.stats.dom)
 $webcam.addEventListener('dblclick', () => {paused = !paused})
 
 const channel = new BroadcastChannel('frame-faces')
@@ -187,9 +185,7 @@ const dimensionsAvailable = $element => new Promise(dimensionsAvailableCb($eleme
 const trackFaces = async () => {
 	setTimeout(trackFaces, 1000/10)
 	if(paused) return
-	enviroment.stats && enviroment.stats.begin()
 	publish(await faceDetector.detect($webcam))
-	enviroment.stats && enviroment.stats.end()
 }
 
 // setup

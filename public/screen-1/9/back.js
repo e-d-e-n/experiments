@@ -131,7 +131,7 @@ function createWorld({width, height, domElement}){
 	const camera = new THREE.PerspectiveCamera(55, width / height, 1, 64)
 	camera.position.z = 12
 
-	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false})
+	const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
 	renderer.setSize(width, height)
 	domElement.appendChild(renderer.domElement)
 	return {camera, renderer}
@@ -190,7 +190,7 @@ const createPosts = ({options}) => {
 function createGUI({options, camera, renderer}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
-	window._enterFullScreen = () => screenfull.request(renderer.domElement)
+	window._enterFullScreen = () => screenfull.request(document.querySelector('#composite-scene'))
 
 	const gui = new dat.GUI()
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
@@ -274,7 +274,7 @@ function animation(enviroment){
 	const [loadingFaces, knownFaces, totalFaces] = countFaces(faceData)
 	const amounts = {loadingFaces, knownFaces, totalFaces}
 
-	scene.background = options.background
+	// scene.background = options.background
 
 	plasma.material.uniforms.time.value = options.perlin.speed * (now - start)
 	plasma.material.uniforms.decay.value = options.perlin.decay
