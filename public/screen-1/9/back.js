@@ -307,7 +307,7 @@ function animation(enviroment){
 		const {x: postX, y: postY} = props
 
 		const oScale = (scale/480) * 2 * 1.1875
-		const translateX = (-0.5 + (postX/640)) * (factor/2)
+		const translateX = (-0.5 + (postX/640)) * (factor/2) * -1
 		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factor) / 3.5)
 		const translateZ = oScale / 1000 // negligible ammount used for z-ordering
 		post.matrix.set(
@@ -320,7 +320,7 @@ function animation(enviroment){
 				new THREE.Euler(
 					props.rotationX * -1,
 					props.rotationY * +1,
-					props.rotationZ * -1,
+					props.rotationZ * +1,
 				)
 			)
 		)
