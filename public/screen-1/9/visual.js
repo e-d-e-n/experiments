@@ -176,6 +176,7 @@ const createPosts = ({options}) => {
 		const material = new THREE.MeshBasicMaterial({
 			map: loadingTexture, transparent: true,
 			depthWrite: false, depthTest: false,
+			alphaTest: 0.9,
 		})
 		const mesh = new THREE.Mesh(geometry, material)
 		mesh.matrixAutoUpdate = false
