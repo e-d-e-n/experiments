@@ -54,7 +54,7 @@ const options = {
 	detail: 6,
 	fps: 10,
 	raf: true,
-	dynamic: false,
+	dynamic: true,
 	background: new THREE.Color(0x000000),
 	pixelRatio: 1,
 	perlin: {
@@ -255,7 +255,7 @@ const getFactored = (
 
 const getScale = amounts => getFactored(options.factors.scale2d, amounts)
 const getWaves = amounts => getFactored(options.factors.waves, amounts)
-const getSaturation = amounts => getFactored(options.factors.saturation, amounts)
+const getSaturation = amounts => 0
 
 function animation(enviroment){
 	const loopFn = enviroment.options.raf ? requestAnimationFrame : setTimeout
