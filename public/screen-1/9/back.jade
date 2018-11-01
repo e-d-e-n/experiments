@@ -1,0 +1,12 @@
+#container
+script#vertexShader(type='text/plain')
+	include ../shaders/pnoise.glsl
+	include ../shaders/turbulence.glsl
+	include ./main.vert
+script#fragmentShader(type='text/plain')
+	include ./main.frag
+script(src='https://unpkg.com/stats.js@0.17.0')
+script(src='https://unpkg.com/three@0.96.0')
+script(src='https://unpkg.com/dat.gui@0.7.2')
+script(src='https://unpkg.com/screenfull@3.3.3')
+script(src='./back.js')
