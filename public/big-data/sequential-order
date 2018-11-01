@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+find "$(dirname "$0")" -type d -mindepth 1 -maxdepth 1 | \
+	while read folder; do
+		find "$folder" -type f -name '*.png' -size 0 -delete
+		find "$folder" -type f -name '*.png' ! -name '*.tex.png' | cat -n | \
+			while read number filename; do
+				printf '%s' "mv $(basename "$filename") ${number}.tex.png"
+				# pngquant -o "${folder}/${number}.tex.png" --force --posterize=4 -- "$filename"
+				if [ -f "${folder}/${number}.tex.png" ]; then
+					echo ': skip'
+				else
+					mv -f "$filename" "${folder}/${number}.tex.png"
+					echo ': done'
+				fi
+			done
+	done
