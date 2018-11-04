@@ -182,10 +182,20 @@ const dimensionsAvailableCb = ($element) => async callback => {
 
 const dimensionsAvailable = $element => new Promise(dimensionsAvailableCb($element))
 
+const handleFacesError = e => {
+	console.warn('faceDetector', e)
+	return []
+}
+
 const trackFaces = async () => {
 	setTimeout(trackFaces, 1000/10)
 	if(paused) return
-	publish(await faceDetector.detect($webcam))
+	const faces = await faceDetector.detect($webcam).catch(handleFacesError)
+	try{
+		publish(faces)
+	}catch(e){
+		console.warn('publish', e)
+	}
 }
 
 // setup
