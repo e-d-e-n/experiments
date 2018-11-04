@@ -85,6 +85,12 @@ const options = {
 		translateY: 0,
 		positionZ: 9.45,
 	},
+	blackDot: {
+		render: true,
+		size: 10,
+		translateX: 0,
+		translateY: 0,
+	}
 }
 
 dat.GUI.prototype.addThreeColor = function(obj, name){
@@ -115,12 +121,13 @@ function init({window, document, options, start}){
 	const {camera, renderer} = createWorld({width, height, domElement})
 	const {plasma} = createPlasma({options, vertexShader, fragmentShader})
 	const {posts} = createPosts({options})
+	const {blackDot} = createBlackDot({options, domElement})
 
 	scene.add(plasma)
 	scene.add(posts)
 
-	const {stats} = createGUI({camera, options, renderer})
-	animation({scene, plasma, camera, renderer, options, start, stats, posts})
+	const {stats} = createGUI({camera, options, renderer, blackDot})
+	animation({scene, plasma, camera, renderer, options, start, stats, posts, blackDot})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
@@ -187,8 +194,21 @@ const createPosts = ({options}) => {
 	return {posts}
 }
 
+const createBlackDot = ({domElement}) => {
+	const blackDot = document.createElement('div')
+	blackDot.style.background = '#000'
+	blackDot.style.position = 'absolute'
+	blackDot.style.left = '50%'
+	blackDot.style.top = '50%'
+	blackDot.style.transform = 'translate(-50%, -50%)'
+	blackDot.style.width = options.blackDot.size + 'px'
+	blackDot.style.height = options.blackDot.size + 'px'
+	blackDot.style.borderRadius = '100%'
+	domElement.appendChild(blackDot)
+	return {blackDot}
+}
 
-function createGUI({options, camera, renderer}){
+function createGUI({options, camera, renderer, blackDot}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 	window._enterFullScreen = () => screenfull.request(renderer.domElement)
@@ -234,8 +254,21 @@ function createGUI({options, camera, renderer}){
 	postsGUI.add(options.posts, 'factor', -10, 10)
 	postsGUI.add(options.posts, 'translateX', -12, 12)
 	postsGUI.add(options.posts, 'translateY', -12, 12)
-	postsGUI.add(options.posts, 'positionZ', 0, 13)
-	// postsGUI.open()
+	postsGUI.add(options.posts, 'positionZ', 0, 11.9)
+
+	const blackDotGUI = gui.addFolder('Black Dot Options')
+	blackDotGUI.add(options.blackDot, 'render')
+	blackDotGUI.add(options.blackDot, 'size', 2, 40).onChange(size => {
+		blackDot.style.width = `${size}px`
+		blackDot.style.height = `${size}px`
+	})
+	blackDotGUI.add(options.blackDot, 'translateX', window.innerWidth / -2, window.innerWidth / 2).onChange(translateX => {
+		blackDot.style.marginLeft = (translateX * -1) + 'px'
+	})
+	blackDotGUI.add(options.blackDot, 'translateY', window.innerHeight / -2, window.innerHeight / 2).onChange(translateY => {
+		blackDot.style.marginTop = (translateY * -1) + 'px'
+	})
+	blackDotGUI.open()
 
 	return {stats, gui}
 }
