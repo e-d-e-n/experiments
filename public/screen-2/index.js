@@ -1,8 +1,19 @@
 const options = {}
-options.offsetX = 0
-options.offsetY = 0
+
+options.offsetX = parseInt(localStorage.getItem('screen-2:offsetX') || '0', 10)
+options.offsetY = parseInt(localStorage.getItem('screen-2:offsetY') || '0', 10)
+const handleChange = name => value => localStorage.setItem(`screen-2:${name}`, value)
 
 const gui = new dat.GUI()
+
+const isDescendant = (parent, child) => {
+	var node = child.parentNode
+	while(node != null){
+		if(node == parent) return true
+		node = node.parentNode
+	}
+	return false
+}
 
 !(function(t, e) {
 	'object' == typeof exports && 'undefined' != typeof module
@@ -90,16 +101,22 @@ const gui = new dat.GUI()
 						t.charWidth = n
 						t.lineHeight = r
 						t.aspect = n / r
-						gui.add(options, 'offsetX', 0, window.innerWidth / t.charWidth, 1)
-						gui.add(options, 'offsetY', 0, window.innerHeight / t.lineHeight, 1)
+						gui.add(options, 'offsetX', 0, window.innerWidth / t.charWidth, 1).onChange(handleChange('offsetX'))
+						gui.add(options, 'offsetY', 0, window.innerHeight / t.lineHeight, 1).onChange(handleChange('offsetY'))
 				  })(X),
 				  document.addEventListener('mousemove', function(t) {
+				  	if(isDescendant(gui.domElement, t.target)) return
 						T.firstMove ||
 							((T.px = t.clientX), (T.py = t.clientY), (T.firstMove = !0)),
 							(T.x = t.clientX),
 							(T.y = t.clientY)
 				  }),
+				  document.addEventListener('dblclick', function(t) {
+				  	if(isDescendant(gui.domElement, t.target)) return
+				  	document.querySelector('.dg.ac').classList.toggle('visible')
+				  }),
 				  document.addEventListener('click', function(t) {
+				  	if(isDescendant(gui.domElement, t.target)) return
 						s.fill(k, ~~(Math.random() * L.length)), c(q, D, O)
 				  }),
 				  document.addEventListener('touchstart', function(t) {
