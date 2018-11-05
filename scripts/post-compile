@@ -8,3 +8,4 @@ rm -rf ./dist
 mkdir -p ./dist
 
 ./scripts/export-screen-2
+mv ./dist ./www
