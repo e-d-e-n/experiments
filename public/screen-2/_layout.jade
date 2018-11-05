@@ -58,10 +58,11 @@ html
 					'this is f---ed up',
 				]
 
+				const e1 = document.querySelector('main .swapper1')
+				const e2 = document.querySelector('main .swapper2')
+
 				const swap = () => {
-					const e1 = document.querySelector('main .swapper1')
 					e1.innerText = shuffle(s1)
-					const e2 = document.querySelector('main .swapper2')
 					e2.innerText = shuffle(s2)
 					js.ert.refresh()
 				}
