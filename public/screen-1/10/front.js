@@ -69,9 +69,9 @@ const options = {
 		opacity: 0.066,
 	},
 	plasma: {
-		scale2d: 1,
-		translateX: 0,
-		translateY: 0,
+		scale2d: 1.1871754932502596,
+		translateX: -0.3530633437175492,
+		translateY: -1.150571131879543,
 		translateZ: 0,
 	},
 	factors: {
@@ -83,20 +83,20 @@ const options = {
 		factor: (640 / 480) * 2, // 2.66
 		factorX: 1.33,
 		factorY: (640 / 480) * 2, // 2.66
-		scale2d: 1,
+		scale2d: 2.33,
 		translateX: 0,
 		translateY: 0,
-		positionZ: 9.45,
+		positionZ: 10.5,
 	},
 	blackDot: {
 		render: true,
-		size: 8,
-		translateX: 14,
-		translateY: -44,
+		size: 7,
+		translateX: 17,
+		translateY: -46,
 	},
 	blackBars: {
-		top: 10,
-		bottom: 10,
+		top: 21,
+		bottom: 24,
 		left: 0,
 		right: 0,
 	},
