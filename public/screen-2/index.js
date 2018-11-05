@@ -438,7 +438,7 @@ const gui = new dat.GUI()
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
 
 	var C =
-			'aáàâãbcçdeèéêfghiîìïíjklmnoóòõôpqrstuúùûüvwxyzAÁÀÂÃBCÇDEÈÉÊFGHIÎÌÏÍJKLMNOÓÒÕÔPQRSTUÚÙÛÜVWXYZ0123456789%/|\\()#?!"\'“”‘’;:&π*+•=—-_,. ',
+			'aáàâãbcçdeèéêfghiîìïíjklmnoóòõôpqrstuúùûüvwxyz%/|\\()#?!"\'“”‘’;:&π*+•=—-_,. ',
 		L = {
 			list: Array.from(C),
 			map: new Map(
