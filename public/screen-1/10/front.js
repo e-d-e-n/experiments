@@ -90,7 +90,13 @@ const options = {
 		size: 8,
 		translateX: 18,
 		translateY: -47,
-	}
+	},
+	blackBars: {
+		top: 10,
+		bottom: 10,
+		left: 0,
+		right: 0,
+	},
 }
 
 dat.GUI.prototype.addThreeColor = function(obj, name){
@@ -122,12 +128,13 @@ function init({window, document, options, start}){
 	const {plasma} = createPlasma({options, vertexShader, fragmentShader})
 	const {posts} = createPosts({options})
 	const {blackDot} = createBlackDot({options, domElement})
+	const {blackBars} = createBlackBars({options, domElement})
 
 	scene.add(plasma)
 	scene.add(posts)
 
-	const {stats} = createGUI({camera, options, renderer, blackDot, domElement})
-	animation({scene, plasma, camera, renderer, options, start, stats, posts, blackDot})
+	const {stats} = createGUI({camera, options, renderer, blackDot, blackBars, domElement})
+	animation({scene, plasma, camera, renderer, options, start, stats, posts, blackDot, blackBars})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
 	window.addEventListener('resize', resizeHandler)
@@ -194,21 +201,49 @@ const createPosts = ({options}) => {
 	return {posts}
 }
 
-const createBlackDot = ({domElement}) => {
+const createBlackDot = ({options, domElement}) => {
 	const blackDot = document.createElement('div')
 	blackDot.style.background = '#000'
 	blackDot.style.position = 'absolute'
 	blackDot.style.left = '50%'
 	blackDot.style.top = '50%'
 	blackDot.style.transform = 'translate(-50%, -50%)'
-	blackDot.style.width = options.blackDot.size + 'px'
-	blackDot.style.height = options.blackDot.size + 'px'
 	blackDot.style.borderRadius = '100%'
+	blackDot.style.width = `${options.blackDot.size}px`
+	blackDot.style.height = `${options.blackDot.size}px`
+	blackDot.style.marginLeft = (options.blackDot.translateX * -1) + 'px'
+	blackDot.style.marginTop = (options.blackDot.translateY * -1) + 'px'
 	domElement.appendChild(blackDot)
 	return {blackDot}
 }
 
-function createGUI({options, camera, renderer, blackDot, domElement}){
+const createBlackBars = ({options, domElement}) => {
+	const blackBars = {
+		top: document.createElement('div'),
+		bottom: document.createElement('div'),
+		left: document.createElement('div'),
+		right: document.createElement('div'),
+	}
+
+	blackBars.top.classList.add('blackbar', 'blackbar-top')
+	blackBars.bottom.classList.add('blackbar', 'blackbar-bottom')
+	blackBars.left.classList.add('blackbar', 'blackbar-left')
+	blackBars.right.classList.add('blackbar', 'blackbar-right')
+
+	blackBars.top.style.height = options.blackBars.top + 'px'
+	blackBars.bottom.style.height = options.blackBars.bottom + 'px'
+	blackBars.left.style.width = options.blackBars.left + 'px'
+	blackBars.right.style.width = options.blackBars.right + 'px'
+
+	domElement.appendChild(blackBars.top)
+	domElement.appendChild(blackBars.bottom)
+	domElement.appendChild(blackBars.left)
+	domElement.appendChild(blackBars.right)
+
+	return {blackBars}
+}
+
+function createGUI({options, camera, renderer, blackDot, blackBars, domElement}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 	window._enterFullScreen = () => screenfull.request(domElement)
@@ -262,13 +297,32 @@ function createGUI({options, camera, renderer, blackDot, domElement}){
 		blackDot.style.width = `${size}px`
 		blackDot.style.height = `${size}px`
 	})
-	blackDotGUI.add(options.blackDot, 'translateX', window.innerWidth / -2, window.innerWidth / 2).onChange(translateX => {
+	blackDotGUI.add(options.blackDot, 'translateX', window.innerWidth / -4, window.innerWidth / 4).onChange(translateX => {
 		blackDot.style.marginLeft = (translateX * -1) + 'px'
 	})
-	blackDotGUI.add(options.blackDot, 'translateY', window.innerHeight / -2, window.innerHeight / 2).onChange(translateY => {
+	blackDotGUI.add(options.blackDot, 'translateY', window.innerHeight / -4, window.innerHeight / 4).onChange(translateY => {
 		blackDot.style.marginTop = (translateY * -1) + 'px'
 	})
-	blackDotGUI.open()
+	// blackDotGUI.open()
+
+	const blackBarGUI = gui.addFolder('Black Bar Options')
+	blackBarGUI.add(options.blackBars, 'top', 0, window.innerHeight / 4).onChange(top => {
+		blackBars.top.style.height = top + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'bottom', 0, window.innerHeight / 4).onChange(bottom => {
+		blackBars.bottom.style.height = bottom + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'left', 0, window.innerWidth / 4).onChange(left => {
+		blackBars.left.style.width = left + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'right', 0, window.innerWidth / 4).onChange(right => {
+		blackBars.right.style.width = right + 'px'
+	})
+	// blackBarGUI.open()
+
 
 	return {stats, gui}
 }
