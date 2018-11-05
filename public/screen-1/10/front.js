@@ -87,9 +87,9 @@ const options = {
 	},
 	blackDot: {
 		render: true,
-		size: 10,
-		translateX: 0,
-		translateY: 0,
+		size: 8,
+		translateX: 18,
+		translateY: -47,
 	}
 }
 
