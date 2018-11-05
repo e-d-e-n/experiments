@@ -1,0 +1,14 @@
+html
+	head
+		link(rel='stylesheet' href='index.css')
+	body
+		main.invisible!=yield
+		script(src='https://unpkg.com/dat.gui@0.7.2')
+		script(src='https://unpkg.com/screenfull@3.3.3')
+		script(src='index.js')
+		script.
+			js.ert.setup(() => {
+				js.ert.track(document.querySelector('main'))
+			})
+			// add swap
+
