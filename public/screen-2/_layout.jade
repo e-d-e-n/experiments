@@ -6,9 +6,66 @@ html
 		script(src='https://unpkg.com/dat.gui@0.7.2')
 		script(src='https://unpkg.com/screenfull@3.3.3')
 		script(src='index.js')
+
 		script.
 			js.ert.setup(() => {
 				js.ert.track(document.querySelector('main'))
 			})
-			// add swap
 
+		script.
+			window.addEventListener('load', function(){
+				const shuffle = array => array.sort(() => 0.5 - Math.random())[0]
+
+				const s1 = [
+					'quem ganha?',
+					'quem perde?',
+					'quem paga?',
+					'quem leva?',
+					'quem toma?',
+					'quem vê?',
+					'quem não vê?',
+					'quem destrói?',
+					'quem constrói?',
+					'quem avança?',
+					'quem regride?',
+					'quem sabe?',
+					'quem desconhece?',
+				]
+
+				const s2 = [
+					'television delivers people',
+					'paradise is a walled garden?',
+					'opposite exclusive universes?',
+					'fitter, happier, more productive',
+					'comfortable, not drinking too much',
+					'regular exercise at the gym, three days a week',
+					'getting on better with your associate employee contemporaries',
+					'eating well, no more microwave dinners and saturated fats',
+					'sleeping well, no bad dreams',
+					'no paranoia',
+					'no longer empty and frantic',
+					'a pig in a cage on antibiotics',
+					'is this even real?',
+					'what is real?',
+					'what is virtual?',
+					'the ---- is a lie',
+					'everything is fine',
+					'don’t look left',
+					'if you don’t pay you are the product',
+					'don’t do evil',
+					'i’ve read and accept the terms & conditions',
+					'2+2=5',
+					'this is f---ed up',
+				]
+
+				const swap = () => {
+					const e1 = document.querySelector('main .swapper1')
+					e1.innerText = shuffle(s1)
+					const e2 = document.querySelector('main .swapper2')
+					e2.innerText = shuffle(s2)
+					js.ert.refresh()
+				}
+
+				swap()
+				setInterval(swap, 4000)
+			})
