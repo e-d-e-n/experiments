@@ -126,7 +126,7 @@ function init({window, document, options, start}){
 	scene.add(plasma)
 	scene.add(posts)
 
-	const {stats} = createGUI({camera, options, renderer, blackDot})
+	const {stats} = createGUI({camera, options, renderer, blackDot, domElement})
 	animation({scene, plasma, camera, renderer, options, start, stats, posts, blackDot})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
@@ -208,10 +208,10 @@ const createBlackDot = ({domElement}) => {
 	return {blackDot}
 }
 
-function createGUI({options, camera, renderer, blackDot}){
+function createGUI({options, camera, renderer, blackDot, domElement}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
-	window._enterFullScreen = () => screenfull.request(renderer.domElement)
+	window._enterFullScreen = () => screenfull.request(domElement)
 
 	const gui = new dat.GUI()
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
