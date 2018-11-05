@@ -1,5 +1,6 @@
 const options = {}
 options.offsetX = 0
+options.offsetY = 0
 
 const gui = new dat.GUI()
 
@@ -90,6 +91,7 @@ const gui = new dat.GUI()
 						t.lineHeight = r
 						t.aspect = n / r
 						gui.add(options, 'offsetX', 0, window.innerWidth / t.charWidth, 1)
+						gui.add(options, 'offsetY', 0, window.innerHeight / t.lineHeight, 1)
 				  })(X),
 				  document.addEventListener('mousemove', function(t) {
 						T.firstMove ||
@@ -527,7 +529,7 @@ const gui = new dat.GUI()
 						key: 'y',
 						value: function(t) {
 							var e = this.DOMElement.getBoundingClientRect()
-							return Math.round(e.top / t.lineHeight)
+							return Math.round(e.top / t.lineHeight) + options.offsetY
 						},
 					},
 				]),
