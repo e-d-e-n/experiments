@@ -85,6 +85,12 @@ const options = {
 		translateY: 0,
 		positionZ: 9.45,
 	},
+	blackBars: {
+		top: 10,
+		bottom: 10,
+		left: 0,
+		right: 0,
+	},
 }
 
 dat.GUI.prototype.addThreeColor = function(obj, name){
@@ -115,11 +121,12 @@ function init({window, document, options, start}){
 	const {camera, renderer} = createWorld({width, height, domElement})
 	const {plasma} = createPlasma({options, vertexShader, fragmentShader})
 	const {posts} = createPosts({options})
+	const {blackBars} = createBlackBars({options, domElement})
 
 	scene.add(plasma)
 	scene.add(posts)
 
-	const {stats} = createGUI({camera, options, renderer})
+	const {stats} = createGUI({camera, options, blackBars,renderer})
 	animation({scene, plasma, camera, renderer, options, start, stats, posts})
 
 	const resizeHandler = () => onWindowResize({camera, renderer, window})
@@ -186,8 +193,33 @@ const createPosts = ({options}) => {
 	return {posts}
 }
 
+const createBlackBars = ({options, domElement}) => {
+	const blackBars = {
+		top: document.createElement('div'),
+		bottom: document.createElement('div'),
+		left: document.createElement('div'),
+		right: document.createElement('div'),
+	}
 
-function createGUI({options, camera, renderer}){
+	blackBars.top.classList.add('blackbar', 'blackbar-top')
+	blackBars.bottom.classList.add('blackbar', 'blackbar-bottom')
+	blackBars.left.classList.add('blackbar', 'blackbar-left')
+	blackBars.right.classList.add('blackbar', 'blackbar-right')
+
+	blackBars.top.style.height = options.blackBars.top + 'px'
+	blackBars.bottom.style.height = options.blackBars.bottom + 'px'
+	blackBars.left.style.width = options.blackBars.left + 'px'
+	blackBars.right.style.width = options.blackBars.right + 'px'
+
+	domElement.appendChild(blackBars.top)
+	domElement.appendChild(blackBars.bottom)
+	domElement.appendChild(blackBars.left)
+	domElement.appendChild(blackBars.right)
+
+	return {blackBars}
+}
+
+function createGUI({options, camera, blackBars,renderer}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 	window._enterFullScreen = () => screenfull.request(document.querySelector('#composite-scene'))
@@ -235,6 +267,25 @@ function createGUI({options, camera, renderer}){
 	postsGUI.add(options.posts, 'translateY', -12, 12)
 	postsGUI.add(options.posts, 'positionZ', 0, 13)
 	// postsGUI.open()
+
+	const blackBarGUI = gui.addFolder('Black Bar Options')
+	blackBarGUI.add(options.blackBars, 'top', 0, window.innerHeight / 4).onChange(top => {
+		blackBars.top.style.height = top + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'bottom', 0, window.innerHeight / 4).onChange(bottom => {
+		blackBars.bottom.style.height = bottom + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'left', 0, window.innerWidth / 4).onChange(left => {
+		blackBars.left.style.width = left + 'px'
+	})
+
+	blackBarGUI.add(options.blackBars, 'right', 0, window.innerWidth / 4).onChange(right => {
+		blackBars.right.style.width = right + 'px'
+	})
+	// blackBarGUI.open()
+
 
 	return {stats, gui}
 }
