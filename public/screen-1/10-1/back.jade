@@ -1,0 +1,17 @@
+#composite-scene(style='display: flex; align-items: center; justify-content: center')
+	video#webcam(style='display: none;' playsinline)
+	canvas#dither(style='display: block; position: absolute; height: 100%; width: 100%; top: 0; left: 0; image-rendering: pixelated;')
+	#container(style='position: relative;')
+script#vertexShader(type='text/plain')
+	include ../shaders/pnoise.glsl
+	include ../shaders/turbulence.glsl
+	include ./main.vert
+script#fragmentShader(type='text/plain')
+	include ./main.frag
+script(src='https://unpkg.com/stats.js@0.17.0')
+script(src='https://unpkg.com/three@0.96.0')
+script(src='https://unpkg.com/dat.gui@0.7.2')
+script(src='https://unpkg.com/screenfull@3.3.3')
+script(src='https://unpkg.com/canvas-dither@1.0.0/dist/canvas-dither.js')
+script(src='./camera-embed.js')
+script(src='./back.js')
