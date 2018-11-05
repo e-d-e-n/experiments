@@ -1,5 +1,5 @@
 #composite-scene(style='display: flex; align-items: center; justify-content: center')
-	video#webcam(style='display: block; position: absolute; width: 100%; opacity: 0.22; filter: grayscale(1);' playsinline)
+	video#webcam(style='display: block; position: absolute; min-height: 100%; opacity: 0.22; filter: grayscale(1);' playsinline)
 	#container(style='position: relative;')
 script#vertexShader(type='text/plain')
 	include ../shaders/pnoise.glsl

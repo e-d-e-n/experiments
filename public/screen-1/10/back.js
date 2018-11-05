@@ -81,6 +81,9 @@ const options = {
 	},
 	posts: {
 		factor: (640 / 480) * 2, // 2.66
+		factorX: 1.33,
+		factorY: (640 / 480) * 2, // 2.66
+		scale2d: 1,
 		translateX: 0,
 		translateY: 0,
 		positionZ: 9.45,
@@ -223,9 +226,11 @@ function createGUI({options, camera, blackBars,renderer}){
 	const stats = new Stats()
 	document.body.appendChild(stats.dom)
 	window._enterFullScreen = () => screenfull.request(document.querySelector('#composite-scene'))
+	window._setupFullScreen = () => screenfull.request(document.body)
 
 	const gui = new dat.GUI()
 	gui.add(window, '_enterFullScreen').name('enter fullscreen')
+	gui.add(window, '_setupFullScreen').name('setup fullscreen')
 	gui.add(options, 'fps', 0, 60, 1).name('fps')
 	gui.add(options, 'pixelRatio', 1, 2, 1).onChange(value => {
 		renderer.setPixelRatio(value)
@@ -263,9 +268,12 @@ function createGUI({options, camera, blackBars,renderer}){
 
 	const postsGUI = gui.addFolder('Posts Options')
 	postsGUI.add(options.posts, 'factor', -10, 10)
+	postsGUI.add(options.posts, 'factorX', 0.1, 10)
+	postsGUI.add(options.posts, 'factorY', -10, 10)
+	postsGUI.add(options.posts, 'scale2d', 1, 8)
 	postsGUI.add(options.posts, 'translateX', -12, 12)
 	postsGUI.add(options.posts, 'translateY', -12, 12)
-	postsGUI.add(options.posts, 'positionZ', 0, 13)
+	postsGUI.add(options.posts, 'positionZ', 0, 11.9)
 	// postsGUI.open()
 
 	const blackBarGUI = gui.addFolder('Black Bar Options')
@@ -345,8 +353,7 @@ function animation(enviroment){
 		0,0,0,1,
 	)
 
-	const {factor, positionZ, pointSize} = options.posts
-	let index3d = 0
+	const {factor, factorX, factorY, scale2d, positionZ, pointSize} = options.posts
 	posts.children.forEach(post => post.visible = false)
 
 	faceData.forEach(({scale, ...props} = {}, index) => {
@@ -358,12 +365,12 @@ function animation(enviroment){
 		const {x: postX, y: postY} = props
 
 		const oScale = (scale/480) * 2 * 1.1875
-		const translateX = (-0.5 + (postX/640)) * (factor/2) * -1
-		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factor) / 3.5)
-		const translateZ = oScale / 1000 // negligible ammount used for z-ordering
+		const translateX = (-0.5 + (postX/640)) * (factorX * -1)
+		const translateY = ((-0.5 + (postY/480)) * -1) - ((scale/480) * (1 + 1/factorY) / 3.5)
+		const translateZ = oScale / 10000 // negligible ammount used for z-ordering
 		post.matrix.set(
-		      oScale,           0,           0,  translateX,
-		           0,      oScale,           0,  translateY,
+		      oScale * scale2d,           0,           0,  translateX,
+		           0,      oScale * scale2d,           0,  translateY,
 		           0,           0,           1,  translateZ,
 		           0,           0,           0,           1,
 		).multiply(
