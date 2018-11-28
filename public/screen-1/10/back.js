@@ -83,10 +83,10 @@ const options = {
 		factor: (640 / 480) * 2, // 2.66
 		factorX: 1.33,
 		factorY: (640 / 480) * 2, // 2.66
-		scale2d: 1.25,
+		scale2d: 1,
 		translateX: 0,
 		translateY: 0,
-		positionZ: 10.5,
+		positionZ: 9.45,
 	},
 	blackBars: {
 		top: 10,
