@@ -1,0 +1,15 @@
+#composite-scene(style='display: flex; align-items: center; justify-content: center')
+	video#webcam(style='display: block; position: absolute; min-height: 100%; opacity: 0.22; filter: grayscale(1);' playsinline)
+	#container(style='position: relative;')
+script#vertexShader(type='text/plain')
+	include ../shaders/pnoise.glsl
+	include ../shaders/turbulence.glsl
+	include ./main.vert
+script#fragmentShader(type='text/plain')
+	include ./main.frag
+script(src='/unpkg/stats.js@0.17.0')
+script(src='/unpkg/three@0.96.0')
+script(src='/unpkg/dat.gui@0.7.2')
+script(src='/unpkg/screenfull@3.3.3')
+script(src='./camera-embed.js')
+script(src='./back.js')
