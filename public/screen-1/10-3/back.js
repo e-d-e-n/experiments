@@ -89,8 +89,8 @@ const options = {
 		positionZ: 9.45,
 	},
 	blackBars: {
-		top: 10,
-		bottom: 10,
+		top: 0,
+		bottom: 0,
 		left: 0,
 		right: 0,
 	},
@@ -237,7 +237,7 @@ function createGUI({options, camera, blackBars,renderer}){
 	})
 	gui.add(options, 'raf').name('animationFrame')
 	gui.add(options, 'dynamic')
-	// gui.close()
+	gui.close()
 
 	const sceneGUI = gui.addFolder('Scene Options')
 	sceneGUI.addThreeColor(options, 'background').name('Background')
@@ -293,7 +293,6 @@ function createGUI({options, camera, blackBars,renderer}){
 		blackBars.right.style.width = right + 'px'
 	})
 	// blackBarGUI.open()
-
 
 	return {stats, gui}
 }

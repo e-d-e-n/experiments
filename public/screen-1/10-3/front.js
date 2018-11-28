@@ -83,20 +83,20 @@ const options = {
 		factor: (640 / 480) * 2, // 2.66
 		factorX: 1.33,
 		factorY: (640 / 480) * 2, // 2.66
-		scale2d: 2.33,
+		scale2d: 1,
 		translateX: 0,
 		translateY: 0,
-		positionZ: 10.5,
+		positionZ: 9.45,
 	},
 	blackDot: {
 		render: true,
-		size: 7,
+		size: 0,
 		translateX: 17,
 		translateY: -46,
 	},
 	blackBars: {
-		top: 21,
-		bottom: 24,
+		top: 0,
+		bottom: 0,
 		left: 0,
 		right: 0,
 	},
@@ -261,7 +261,7 @@ function createGUI({options, camera, renderer, blackDot, blackBars, domElement})
 	})
 	gui.add(options, 'raf').name('animationFrame')
 	gui.add(options, 'dynamic')
-	// gui.close()
+	gui.close()
 
 	const sceneGUI = gui.addFolder('Scene Options')
 	sceneGUI.addThreeColor(options, 'background').name('Background')
@@ -301,7 +301,7 @@ function createGUI({options, camera, renderer, blackDot, blackBars, domElement})
 
 	const blackDotGUI = gui.addFolder('Black Dot Options')
 	blackDotGUI.add(options.blackDot, 'render')
-	blackDotGUI.add(options.blackDot, 'size', 2, 40).onChange(size => {
+	blackDotGUI.add(options.blackDot, 'size', 0, 40).onChange(size => {
 		blackDot.style.width = `${size}px`
 		blackDot.style.height = `${size}px`
 	})
